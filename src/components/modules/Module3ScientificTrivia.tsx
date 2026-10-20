@@ -1,5 +1,5 @@
-import React from 'react';
-import { Atom, Plus, Minus, Check } from 'lucide-react';
+import React, { useState } from 'react';
+import { Atom, Plus, Minus, Check, BookOpen } from 'lucide-react';
 import { ScientificTriviaModule } from '../../modules/ScientificTriviaModule';
 import { soundManager } from '../../core/SoundManager';
 
@@ -9,6 +9,7 @@ interface Module3Props {
 }
 
 export const Module3ScientificTrivia: React.FC<Module3Props> = ({ module, onAction }) => {
+  const [showReference, setShowReference] = useState(false);
   const isSolved = module.getSolved();
   const isUnlocked = module.getIsUnlocked();
   const selectedElement = module.getSelectedElement();
@@ -68,6 +69,34 @@ export const Module3ScientificTrivia: React.FC<Module3Props> = ({ module, onActi
             );
           })}
         </div>
+      </div>
+
+      <div className="w-full">
+        <button
+          type="button"
+          aria-expanded={showReference}
+          aria-controls="atomic-number-reference"
+          onClick={() => setShowReference((visible) => !visible)}
+          disabled={!isUnlocked}
+          className="flex items-center justify-center gap-1.5 w-full py-1.5 rounded bg-slate-900 hover:bg-slate-800 border border-slate-700 text-[10px] font-mono text-cyan-300 disabled:opacity-40"
+        >
+          <BookOpen className="w-3.5 h-3.5" />
+          {showReference ? 'OCULTAR TABLA Z' : 'CONSULTAR TABLA Z'}
+        </button>
+        {showReference && (
+          <div id="atomic-number-reference" className="grid grid-cols-4 gap-1.5 mt-2" aria-label="Referencia de números atómicos">
+            {ScientificTriviaModule.AVAILABLE_ELEMENTS.map((element) => (
+              <div
+                key={element.symbol}
+                title={element.name}
+                className="min-h-12 flex flex-col items-center justify-center rounded border border-slate-700 bg-black/70 font-mono"
+              >
+                <span className="text-[9px] text-slate-500">{element.atomicNumber}</span>
+                <span className="text-xs font-black text-cyan-300">{element.symbol}</span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Calibrador de Número Atómico (Z) */}

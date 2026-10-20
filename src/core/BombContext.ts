@@ -464,12 +464,12 @@ export class BombContext implements IBombSubject {
       return {
         success: true,
         output: `COMANDOS DEL SISTEMA DISPONIBLES:
-        scan --spatial             : Análisis de orientación espacial
-        decode --seq               : Análisis de secuencia Fibonacci
-        query --trivia             : Consultar pistas de dos elementos y sus números atómicos
-        analyze --geometry        : Análisis de ángulos geométricos
-        calc --math                : Análisis de resonancia
-        sudo override              : Disponible tras resolver los módulos 01–05
+        scan --spatial    : Analiza la matriz 3x3 y deduce la regla que completa la celda ausente.
+        decode --seq      : Observa los siete términos, identifica la relación recurrente e ingresa el siguiente.
+        query --trivia    : Revela dos pistas indirectas; identifica los elementos y determina cada Z.
+        analyze --geometry: Calcula el ángulo interior de tres polígonos y alcanza el objetivo de esta partida.
+        calc --math       : Combina la frecuencia fundamental, el armónico solicitado y la fase resultante.
+        sudo override     : Se habilita tras resolver 01–05; entonces solicita una fecha histórica de cuatro cifras.
   sudo -admin        : Autenticación root (requiere contraseña)
   status             : Diagnóstico general de módulos y telemetría
   clear              : Limpiar buffer de pantalla`,

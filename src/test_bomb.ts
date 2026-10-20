@@ -14,6 +14,9 @@ function verifyVariant(variantIndex: number): void {
   const variant = CHALLENGE_VARIANTS[variantIndex];
   variantBomb.startBomb();
 
+  const help = variantBomb.executeTerminalCommand('help');
+  console.assert(help.output.includes('matriz 3x3') && help.output.includes('armónico solicitado'), 'Help debe describir el tipo de reto de cada módulo');
+
   const blockedOverride = variantBomb.executeTerminalCommand('sudo override');
   console.assert(!blockedOverride.success && blockedOverride.isStrike === false, `Variante ${variantIndex + 1}: override bloqueado sin strike`);
   console.assert(variantBomb.getStrikes() === 0, `Variante ${variantIndex + 1}: intento temprano sin penalización`);
@@ -30,7 +33,8 @@ function verifyVariant(variantIndex: number): void {
   mod1.submitAnswer(variant.spatial.answer);
   variantBomb.executeTerminalCommand('decode --seq');
   mod2.inputNumber(variant.math.answer);
-  variantBomb.executeTerminalCommand('query --trivia');
+  const triviaHint = variantBomb.executeTerminalCommand('query --trivia');
+  console.assert(variant.science.clues.every((clue) => triviaHint.output.includes(clue)), `Variante ${variantIndex + 1}: pistas de terminal deben coincidir con los objetivos`);
   variant.science.elements.forEach((element) => {
     mod3.setElement(element.symbol);
     mod3.setDialZ(element.atomicNumber);
@@ -115,7 +119,7 @@ function runTerminalEditionTestSuite() {
 
   // 5. Probar Terminal query --trivia y resolver Módulo 3 (Oxígeno y Hierro)
   const cmdTrivia = bomb.executeTerminalCommand('query --trivia');
-  console.assert(cmdTrivia.isStrike === false && cmdTrivia.output.includes('Fe'), 'Comando query --trivia debe mostrar las dos pistas');
+  console.assert(cmdTrivia.isStrike === false && CHALLENGE_VARIANTS[0].science.clues.every((clue) => cmdTrivia.output.includes(clue)), 'Comando query --trivia debe mostrar las pistas de la variante');
   mod3.setElement('O');
   mod3.setDialZ(8);
   console.assert(mod3.confirmSubmission() === true, 'Módulo 3 debe aceptar Oxígeno con Z=8');
