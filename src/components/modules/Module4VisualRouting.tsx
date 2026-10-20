@@ -106,13 +106,7 @@ export const Module4VisualRouting: React.FC<Module4Props> = ({ decorator, onActi
         </div>
       </div>
 
-      <p className="text-[10px] text-slate-400 font-mono text-center">
-        {isSolved ? (
-          <span className="text-[#00ff66] font-bold">✓ Enrutamiento Cenit-Ocaso-Nadir Validado</span>
-        ) : (
-          <span>Consulte pista: <code className="text-cyan-300 font-bold">decrypt --visual</code></span>
-        )}
-      </p>
+      {isSolved && <p className="text-[10px] text-[#00ff66] font-mono text-center font-bold">✓ Ruta visual validada</p>}
     </div>
   );
 };

@@ -113,15 +113,7 @@ export const Module6MasterSwitch: React.FC<Module6Props> = ({ module, onAction }
         </div>
       </div>
 
-      <p className="text-[10px] text-slate-400 font-mono text-center">
-        {isSolved ? (
-          <span className="text-[#00ff66] font-bold">✓ Bomba Desarmada Exitosamente</span>
-        ) : !isOverrideAuthorized ? (
-          <span>Desbloqueo en terminal: <code className="text-cyan-300 font-bold">sudo override</code></span>
-        ) : (
-          <span className="text-amber-300 font-bold animate-pulse">¡Anulación autorizada! Levante cubierta y accione corte.</span>
-        )}
-      </p>
+      {isSolved && <p className="text-[10px] text-[#00ff66] font-mono text-center font-bold">✓ Bomba desarmada exitosamente</p>}
     </div>
   );
 };

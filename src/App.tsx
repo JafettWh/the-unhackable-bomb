@@ -118,7 +118,7 @@ export function App() {
                 id="module-wrapper-1"
                 moduleNumber="01"
                 title="ORIENTACIÓN ESPACIAL"
-                subtitle="ESTADO CARDINAL"
+                subtitle="SECUENCIA DE ÁNGULOS POLIGONALES"
                 isSolved={module1.getSolved()}
                 isLocked={!module1.getIsUnlocked()}
                 isActive={module1.getIsUnlocked() && !module1.getSolved()}

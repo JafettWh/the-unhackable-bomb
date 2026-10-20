@@ -1,21 +1,21 @@
 import { BaseModule } from './BaseModule';
-import { ModuleId, BombEvent, CardinalDirection } from '../types';
+import { ModuleId, BombEvent, GeometricShape } from '../types';
 
 /**
  * MÓDULO 1: Orientación Espacial (State)
- * UI: 4 botones cardinales (N, S, E, O).
- * Comando Terminal: scan --spatial -> "El sol nace por la derecha y cae hacia el abismo."
- * Resolución: Razonamiento espacial. Presionar Este (E) y luego Sur (S).
+ * UI: Selección de polígonos sin indicar sus lados.
+ * Comando Terminal: scan --spatial -> pista sobre la suma de ángulos interiores.
+ * Resolución: TRIANGLE seguido de HEXAGON.
  * Al resolver, activa visual y lógicamente el Módulo 2 mediante el patrón Observer.
  */
 export class SpatialOrientationModule extends BaseModule {
   public readonly id: ModuleId = 'module_1';
   public readonly title: string = 'MÓDULO 01 // ORIENTACIÓN ESPACIAL';
-  public readonly subtitle: string = 'SISTEMA DE NAVEGACIÓN CARDINAL';
+  public readonly subtitle: string = 'SECUENCIA DE ÁNGULOS POLIGONALES';
 
-  public readonly targetSequence: CardinalDirection[] = ['E', 'S'];
+  public readonly targetSequence: GeometricShape[] = ['TRIANGLE', 'HEXAGON'];
   private currentStepIndex: number = 0;
-  private inputHistory: CardinalDirection[] = [];
+  private inputHistory: GeometricShape[] = [];
 
   constructor() {
     super();
@@ -28,15 +28,15 @@ export class SpatialOrientationModule extends BaseModule {
     }
   }
 
-  public pressDirection(direction: CardinalDirection): boolean {
+  public pressShape(shape: GeometricShape): boolean {
     if (this.isSolved) return true;
     if (!this.isUnlocked) return false;
     if (!this.context || !this.context.canInteract()) return false;
 
     const strategy = this.context.getStrategy();
-    const isValidStep = strategy.verifySpatialStep(this.currentStepIndex, direction);
+    const isValidStep = strategy.verifySpatialStep(this.currentStepIndex, shape);
 
-    this.inputHistory.push(direction);
+    this.inputHistory.push(shape);
 
     if (isValidStep) {
       this.currentStepIndex++;
@@ -45,11 +45,11 @@ export class SpatialOrientationModule extends BaseModule {
       }
       return true;
     } else {
-      // Intento cardinal fallido: reinicia secuencia y penaliza con Strike
+      // Reinicia la secuencia y penaliza una figura incorrecta.
       this.currentStepIndex = 0;
       this.inputHistory = [];
       this.triggerStrike(
-        `Rumbo cardinal '${direction}' erróneo. Desviación detectada respecto al patrón solar.`
+        `Polígono '${shape}' incorrecto. Secuencia angular reiniciada.`
       );
       return false;
     }
@@ -59,7 +59,7 @@ export class SpatialOrientationModule extends BaseModule {
     return this.currentStepIndex;
   }
 
-  public getInputHistory(): CardinalDirection[] {
+  public getInputHistory(): GeometricShape[] {
     return [...this.inputHistory];
   }
 

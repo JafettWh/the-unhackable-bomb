@@ -174,14 +174,10 @@ export const TerminalComponent: React.FC<TerminalComponentProps> = ({ bomb }) =>
   };
 
   const quickCommands = [
-    { label: 'scan --spatial', cmd: 'scan --spatial', desc: 'Pista Módulo 1' },
-    { label: 'decode --seq', cmd: 'decode --seq', desc: 'Pista Módulo 2' },
-    { label: 'query --trivia', cmd: 'query --trivia', desc: 'Pista Módulo 3' },
-    { label: 'decrypt --visual', cmd: 'decrypt --visual', desc: 'Pista Módulo 4' },
-    { label: 'calc --math', cmd: 'calc --math', desc: 'Pista Módulo 5' },
-    { label: 'sudo override', cmd: 'sudo override', desc: 'Desbloqueo Módulo 6' },
-    { label: 'sudo -admin', cmd: 'sudo -admin', desc: 'Desbloquear Manual Root' },
+    { label: 'help', cmd: 'help', desc: 'Comandos disponibles' },
     { label: 'status', cmd: 'status', desc: 'Diagnóstico' },
+    { label: 'clear', cmd: 'clear', desc: 'Limpiar terminal' },
+    { label: 'sudo -admin', cmd: 'sudo -admin', desc: 'Desbloquear Manual Root' },
   ];
 
   return (

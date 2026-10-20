@@ -1,5 +1,5 @@
 import { IDefusalStrategy } from './IDefusalStrategy';
-import { StrategyType, CardinalDirection, GeometricShape } from '../../types';
+import { StrategyType, GeometricShape, VisualDirection } from '../../types';
 
 /**
  * Patrón: STRATEGY (Concreta)
@@ -12,11 +12,15 @@ export class StandardStrategy implements IDefusalStrategy {
   public readonly description: string =
     'Modo de protección perimetral activo. Las lógicas de resolución requieren validación deductiva.';
 
-  public verifySpatialStep(_currentStep: number, _direction: CardinalDirection): boolean {
+  public verifySpatialStep(_currentStep: number, _shape: GeometricShape): boolean {
     return false;
   }
 
-  public verifySpatialSequence(_sequence: CardinalDirection[]): boolean {
+  public verifySpatialSequence(_sequence: GeometricShape[]): boolean {
+    return false;
+  }
+
+  public verifyVisualRoutingStep(_currentStep: number, _direction: VisualDirection): boolean {
     return false;
   }
 

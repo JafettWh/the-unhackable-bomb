@@ -120,28 +120,28 @@ export const DefusalManualModal: React.FC<ManualModalProps> = ({
                 <div className="p-4 rounded-lg bg-slate-900/90 border border-slate-800">
                   <h4 className="text-cyan-400 font-bold mb-1 font-display">MÓDULO 1: ORIENTACIÓN ESPACIAL</h4>
                   <p className="text-slate-300 text-xs">
-                    Presenta 4 rumbos cardinales (N, S, E, O). Requiere deducir la trayectoria astronómica del amanecer y el abismo pulsando los botones en el orden correcto.
+                    Presenta cinco polígonos sin indicar sus lados. Usa la pista astronómica de la terminal para deducir qué dos figuras suman 900° en ángulos interiores.
                   </p>
                 </div>
 
                 <div className="p-4 rounded-lg bg-slate-900/90 border border-slate-800">
                   <h4 className="text-cyan-400 font-bold mb-1 font-display">MÓDULO 2: SECUENCIA MATEMÁTICA</h4>
                   <p className="text-slate-300 text-xs">
-                    Pantalla LED con una progresión numérica y un teclado 1 al 9. Requiere ingresar el término correcto de la secuencia mostrada.
+                    Pantalla LED con Fibonacci extendida y teclado numérico. Requiere ingresar el término que completa la serie.
                   </p>
                 </div>
 
                 <div className="p-4 rounded-lg bg-slate-900/90 border border-slate-800">
                   <h4 className="text-cyan-400 font-bold mb-1 font-display">MÓDULO 3: CONOCIMIENTO CIENTÍFICO</h4>
                   <p className="text-slate-300 text-xs">
-                    Selector de elementos de la tabla periódica y dial Z. Requiere identificar el comburente primario y fijar su número atómico correcto.
+                    Selector de elementos de la tabla periódica y dial Z. Requiere identificar dos elementos a partir de pistas y fijar sus números atómicos.
                   </p>
                 </div>
 
                 <div className="p-4 rounded-lg bg-slate-900/90 border border-slate-800">
                   <h4 className="text-cyan-400 font-bold mb-1 font-display">MÓDULO 4: CIFRADO GEOMÉTRICO</h4>
                   <p className="text-slate-300 text-xs">
-                    Presenta 4 figuras geométricas con su número de lados visible, y un valor objetivo (<em>TARGET</em>). Seleccione 2 figuras en el orden correcto cuya suma de lados iguale el objetivo. El decorador <em>GlitchDecorator</em> añade interferencia visual.
+                    Presenta cinco polígonos sin indicar sus lados y un objetivo angular. Seleccione tres figuras en orden cuya suma de ángulos interiores coincida con el objetivo. El decorador <em>GlitchDecorator</em> añade interferencia visual.
                   </p>
                 </div>
 
@@ -183,8 +183,8 @@ export const DefusalManualModal: React.FC<ManualModalProps> = ({
                   <div>
                     <h5 className="font-bold text-white text-xs">Módulo 1: Orientación Espacial</h5>
                     <p className="text-slate-400 text-xs mt-0.5">
-                      Pista: "El sol nace por la derecha y cae hacia el abismo."<br />
-                      <strong>Acción:</strong> Presionar <strong className="text-[#00ff66]">E (Este)</strong> y luego <strong className="text-[#00ff66]">S (Sur)</strong>. Desbloquea el Módulo 2.
+                      La pista pide dos polígonos con suma de ángulos interiores de 900°. Triángulo (180°) + hexágono (720°) = 900°.<br />
+                      <strong>Acción:</strong> Presionar <strong className="text-[#00ff66]">△ Triángulo</strong> y luego <strong className="text-[#00ff66]">⬡ Hexágono</strong>. Desbloquea el Módulo 2.
                     </p>
                   </div>
                 </div>
@@ -196,8 +196,8 @@ export const DefusalManualModal: React.FC<ManualModalProps> = ({
                   <div>
                     <h5 className="font-bold text-white text-xs">Módulo 2: Secuencia Matemática</h5>
                     <p className="text-slate-400 text-xs mt-0.5">
-                      Secuencia visible: 1, 1, 2, 3, 5, ?<br />
-                      <strong>Acción:</strong> Teclear el número <strong className="text-[#00ff66]">8</strong> en el teclado (sexto término Fibonacci). Desbloquea el Módulo 3.
+                      Secuencia visible: 1, 1, 2, 3, 5, 8, 13, ?<br />
+                      <strong>Acción:</strong> Teclear el número <strong className="text-[#00ff66]">21</strong> (octavo término Fibonacci). Desbloquea el Módulo 3.
                     </p>
                   </div>
                 </div>
@@ -209,8 +209,8 @@ export const DefusalManualModal: React.FC<ManualModalProps> = ({
                   <div>
                     <h5 className="font-bold text-white text-xs">Módulo 3: Conocimiento Científico</h5>
                     <p className="text-slate-400 text-xs mt-0.5">
-                      Gas comburente: Oxígeno (O). Número atómico Z = 8.<br />
-                      <strong>Acción:</strong> Seleccionar <strong className="text-[#00ff66]">O</strong>, ajustar el Dial a <strong className="text-[#00ff66]">8</strong> y pulsar "Estabilizar". Desbloquea el Módulo 4.
+                      Oxígeno (O): Z = 8. Hierro (Fe): Z = 26.<br />
+                      <strong>Acción:</strong> Estabilizar ambos elementos con sus números atómicos. Desbloquea el Módulo 4.
                     </p>
                   </div>
                 </div>
@@ -222,9 +222,8 @@ export const DefusalManualModal: React.FC<ManualModalProps> = ({
                   <div>
                     <h5 className="font-bold text-white text-xs">Módulo 4: Cifrado Geométrico</h5>
                     <p className="text-slate-400 text-xs mt-0.5">
-                      TARGET = 7. Un cubo tiene 6 caras → 6 + 1 = 7. Busca figuras cuya suma de lados = 7.<br />
-                      △ Triángulo = 3 lados | □ Cuadrado = 4 lados → 3 + 4 = 7.<br />
-                      <strong>Acción:</strong> Presionar <strong className="text-[#00ff66]">△ Triángulo</strong> y luego <strong className="text-[#00ff66]">□ Cuadrado</strong>. Desbloquea el Módulo 5.
+                      Objetivo = 1800°. Suma los ángulos interiores de los polígonos seleccionados.<br />
+                      <strong>Acción:</strong> Presionar <strong className="text-[#00ff66]">△ Triángulo</strong>, <strong className="text-[#00ff66]">⬠ Pentágono</strong> y <strong className="text-[#00ff66]">Octágono</strong>. Desbloquea el Módulo 5.
                     </p>
                   </div>
                 </div>
@@ -249,7 +248,7 @@ export const DefusalManualModal: React.FC<ManualModalProps> = ({
                   <div>
                     <h5 className="font-bold text-white text-xs">Módulo 6: Ejecución Final (Master Switch)</h5>
                     <p className="text-slate-400 text-xs mt-0.5">
-                      Comando terminal: <code className="text-cyan-300 font-bold">sudo override</code> → Desbloquea físicamente el interruptor en la UI.<br />
+                      Ejecuta <code className="text-cyan-300 font-bold">sudo override</code> e introduce el código histórico de cuatro dígitos: <strong className="text-[#00ff66]">1945</strong>.<br />
                       <strong>Acción:</strong> Levantar la cubierta de seguridad y accionar el botón de <strong className="text-[#00ff66]">Corte Total</strong>. La bomba entra en <strong>DefusedState</strong> (Victoria).
                     </p>
                   </div>

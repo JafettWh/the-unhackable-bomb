@@ -13,6 +13,7 @@ export const Module3ScientificTrivia: React.FC<Module3Props> = ({ module, onActi
   const isUnlocked = module.getIsUnlocked();
   const selectedElement = module.getSelectedElement();
   const currentDialZ = module.getCurrentDialZ();
+  const solvedElements = module.getSolvedElements();
 
   const handleSelectElement = (symbol: string) => {
     if (isSolved || !isUnlocked) return;
@@ -74,9 +75,16 @@ export const Module3ScientificTrivia: React.FC<Module3Props> = ({ module, onActi
         <div className="flex items-center gap-1.5 text-xs font-mono text-slate-400">
           <Atom className={`w-4 h-4 ${isSolved ? 'text-[#00ff66]' : 'text-cyan-400'}`} />
           <span>DIAL Z:</span>
-          <span className="font-mono text-base font-black text-cyan-300 px-2 py-0.5 rounded bg-slate-900 border border-slate-700">
-            {currentDialZ}
-          </span>
+          <input
+            aria-label="Número atómico Z"
+            type="number"
+            min={1}
+            max={118}
+            value={currentDialZ}
+            onChange={(event) => module.setDialZ(Number(event.target.value))}
+            disabled={isSolved || !isUnlocked}
+            className="w-14 bg-slate-900 border border-slate-700 rounded px-1 py-0.5 text-center text-base font-black text-cyan-300"
+          />
         </div>
 
         <div className="flex items-center gap-1">
@@ -111,16 +119,10 @@ export const Module3ScientificTrivia: React.FC<Module3Props> = ({ module, onActi
         }`}
       >
         <Check className="w-3.5 h-3.5" />
-        <span>{isSolved ? 'ESTABILIZADO (O / Z=8)' : 'ESTABILIZAR ELEMENTO'}</span>
+        <span>{isSolved ? 'ESTABILIZACIÓN COMPLETA' : `VALIDAR ELEMENTO ${solvedElements + 1} / 2`}</span>
       </button>
 
-      <p className="text-[10px] text-slate-400 font-mono text-center">
-        {isSolved ? (
-          <span className="text-[#00ff66] font-bold">✓ Oxígeno (Z=8) Configurado</span>
-        ) : (
-          <span>Consulte pista: <code className="text-cyan-300 font-bold">query --trivia</code></span>
-        )}
-      </p>
+      {isSolved && <p className="text-[10px] text-[#00ff66] font-mono text-center font-bold">✓ Oxígeno y hierro estabilizados</p>}
     </div>
   );
 };

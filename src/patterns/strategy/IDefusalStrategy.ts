@@ -1,4 +1,4 @@
-import { StrategyType, CardinalDirection, GeometricShape } from '../../types';
+import { StrategyType, GeometricShape, VisualDirection } from '../../types';
 
 /**
  * Patrón de Comportamiento: STRATEGY
@@ -12,10 +12,11 @@ export interface IDefusalStrategy {
 
   /**
    * Módulo 1: Orientación Espacial
-   * Valida paso o secuencia completa de orientación cardinal
+  * Valida paso o secuencia completa de polígonos
    */
-  verifySpatialStep(currentStep: number, direction: CardinalDirection): boolean;
-  verifySpatialSequence(sequence: CardinalDirection[]): boolean;
+  verifySpatialStep(currentStep: number, shape: GeometricShape): boolean;
+  verifySpatialSequence(sequence: GeometricShape[]): boolean;
+  verifyVisualRoutingStep(currentStep: number, direction: VisualDirection): boolean;
 
   /**
    * Módulo 2: Secuencia Matemática

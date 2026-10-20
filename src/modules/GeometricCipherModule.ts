@@ -3,11 +3,9 @@ import { ModuleId, BombEvent, GeometricShape } from '../types';
 
 /**
  * MÓDULO 4: Cifrado Geométrico (Decorator)
- * UI: Cuatro figuras geométricas (△, □, ⬠, ⬡) que el jugador presiona en orden.
- * Lógica: La clave está en la suma de LADOS de las figuras seleccionadas.
- *   - El target visible es 7 (las caras de un cubo + 1 → 6+1=7)
- *   - Solución: TRIANGLE(3 lados) + SQUARE(4 lados) = 7
- *   - Secuencia correcta: △ (Triángulo) → □ (Cuadrado)
+ * UI: Cinco polígonos que el jugador selecciona en orden.
+ * Lógica: La suma de sus ángulos interiores debe ser 1800°.
+ *   - Solución: TRIANGLE(180°) + PENTAGON(540°) + OCTAGON(1080°)
  * Comando Terminal: analyze --geometry
  * Patrón Observer: Se desbloquea automáticamente cuando el Módulo 3 es resuelto.
  * Al resolver, activa el Módulo 5.
@@ -15,10 +13,10 @@ import { ModuleId, BombEvent, GeometricShape } from '../types';
 export class GeometricCipherModule extends BaseModule {
   public readonly id: ModuleId = 'module_4';
   public readonly title: string = 'MÓDULO 04 // CIFRADO GEOMÉTRICO';
-  public readonly subtitle: string = 'DEDUCCIÓN ESPACIAL — SUMA DE LADOS';
+  public readonly subtitle: string = 'DEDUCCIÓN ESPACIAL — ÁNGULOS INTERIORES';
 
-  public readonly targetSum: number = 7;
-  public readonly targetSequence: GeometricShape[] = ['TRIANGLE', 'SQUARE'];
+  public readonly targetInteriorAngleSum: number = 1800;
+  public readonly targetSequence: GeometricShape[] = ['TRIANGLE', 'PENTAGON', 'OCTAGON'];
   private currentStepIndex: number = 0;
   private pressedShapes: GeometricShape[] = [];
 
@@ -52,10 +50,11 @@ export class GeometricCipherModule extends BaseModule {
       }
       return true;
     } else {
+      const failedStep = this.currentStepIndex + 1;
       this.currentStepIndex = 0;
       this.pressedShapes = [];
       this.triggerStrike(
-        `Figura '${shape}' incorrecta en paso ${this.currentStepIndex + 1}. Secuencia geométrica reiniciada.`
+        `Figura '${shape}' incorrecta en paso ${failedStep}. Secuencia geométrica reiniciada.`
       );
       return false;
     }

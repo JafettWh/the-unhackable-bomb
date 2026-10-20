@@ -17,8 +17,9 @@ export type ModuleId =
   | 'module_6'; // Ejecución Final (Master Switch)
 
 export type CardinalDirection = 'N' | 'S' | 'E' | 'O';
+export type VisualDirection = 'UP' | 'DOWN' | 'LEFT' | 'RIGHT';
 
-export type GeometricShape = 'TRIANGLE' | 'SQUARE' | 'PENTAGON' | 'HEXAGON';
+export type GeometricShape = 'TRIANGLE' | 'SQUARE' | 'PENTAGON' | 'HEXAGON' | 'OCTAGON';
 
 export interface ShapeInfo {
   id: GeometricShape;

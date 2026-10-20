@@ -24,7 +24,7 @@ export const Module2MathSequence: React.FC<Module2Props> = ({ module, onAction }
     onAction();
   };
 
-  const keypadButtons = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  const keypadButtons = [1, 2, 3, 4, 5, 6, 7, 8, 9, 13, 21];
 
   return (
     <div className="w-full flex flex-col items-center justify-center gap-3">
@@ -34,12 +34,12 @@ export const Module2MathSequence: React.FC<Module2Props> = ({ module, onAction }
           FIBONACCI REGISTER
         </span>
         <div className="font-mono text-sm md:text-base font-black tracking-wider text-cyan-300 text-glow-blue">
-          {isSolved ? '1, 1, 2, 3, 5, [ 8 ]' : '1, 1, 2, 3, 5, [ ? ]'}
+          {isSolved ? '1, 1, 2, 3, 5, 8, 13, [ 21 ]' : '1, 1, 2, 3, 5, 8, 13, [ ? ]'}
         </div>
       </div>
 
       {/* Teclado Numérico (Keypad 3x3) */}
-      <div className="grid grid-cols-3 gap-2 w-full max-w-[180px]">
+      <div className="grid grid-cols-3 gap-2 w-full max-w-[200px]">
         {keypadButtons.map((num) => {
           const isCurrentSelected = selectedInput === num;
           return (
@@ -63,11 +63,7 @@ export const Module2MathSequence: React.FC<Module2Props> = ({ module, onAction }
       </div>
 
       <p className="text-[10px] text-slate-400 font-mono text-center">
-        {isSolved ? (
-          <span className="text-[#00ff66] font-bold">✓ 6to Término Fibonacci Ingresado</span>
-        ) : (
-          <span>Consulte pista: <code className="text-cyan-300 font-bold">decode --seq</code></span>
-        )}
+        {isSolved && <span className="text-[#00ff66] font-bold">✓ Octavo Término Fibonacci Ingresado</span>}
       </p>
     </div>
   );

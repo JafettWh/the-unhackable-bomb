@@ -128,13 +128,7 @@ export const Module5PhysicalCalculation: React.FC<Module5Props> = ({ module, onA
         <span>{isSolved ? 'RESONANCIA CALIBRADA (22 Hz)' : 'SINTONIZAR RESONANCIA'}</span>
       </button>
 
-      <p className="text-[10px] text-slate-400 font-mono text-center">
-        {isSolved ? (
-          <span className="text-[#00ff66] font-bold">✓ Doble de Primer Primo (11 * 2 = 22 Hz)</span>
-        ) : (
-          <span>Consulte pista: <code className="text-cyan-300 font-bold">calc --math</code></span>
-        )}
-      </p>
+      {isSolved && <p className="text-[10px] text-[#00ff66] font-mono text-center font-bold">✓ Resonancia calibrada</p>}
     </div>
   );
 };

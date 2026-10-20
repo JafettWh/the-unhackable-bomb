@@ -27,6 +27,11 @@ export class ScientificTriviaModule extends BaseModule {
 
   private selectedElement: string = 'H';
   private currentDialZ: number = 1;
+  private solvedElements: number = 0;
+  private readonly targetElements = [
+    { symbol: 'O', atomicNumber: 8 },
+    { symbol: 'Fe', atomicNumber: 26 },
+  ];
 
   constructor() {
     super();
@@ -60,11 +65,20 @@ export class ScientificTriviaModule extends BaseModule {
     if (!this.isUnlocked) return false;
     if (!this.context || !this.context.canInteract()) return false;
 
+    const target = this.targetElements[this.solvedElements];
     const strategy = this.context.getStrategy();
-    const isValid = strategy.verifyScientificTrivia(this.selectedElement, this.currentDialZ);
+    const isValid = target
+      && this.selectedElement === target.symbol
+      && strategy.verifyScientificTrivia(this.selectedElement, this.currentDialZ);
 
     if (isValid) {
-      this.markSolved();
+      this.solvedElements++;
+      if (this.solvedElements === this.targetElements.length) {
+        this.markSolved();
+      } else {
+        this.selectedElement = this.targetElements[this.solvedElements].symbol;
+        this.currentDialZ = 1;
+      }
       return true;
     } else {
       this.triggerStrike(
@@ -82,10 +96,15 @@ export class ScientificTriviaModule extends BaseModule {
     return this.currentDialZ;
   }
 
+  public getSolvedElements(): number {
+    return this.solvedElements;
+  }
+
   public reset(): void {
     this.isSolved = false;
     this.isUnlocked = false;
     this.selectedElement = 'H';
     this.currentDialZ = 1;
+    this.solvedElements = 0;
   }
 }

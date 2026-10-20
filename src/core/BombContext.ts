@@ -339,9 +339,28 @@ export class BombContext implements IBombSubject {
    */
   // Estado interno para autenticación interactiva de sudo -admin
   private awaitingAdminPassword: boolean = false;
+  private awaitingOverrideCode: boolean = false;
 
   public executeTerminalCommand(rawInput: string): { success: boolean; output: string; isStrike: boolean } {
-    const input = rawInput.trim();
+    const input = rawInput.trim().toLowerCase();
+
+    if (this.awaitingOverrideCode) {
+      this.awaitingOverrideCode = false;
+      if (input === '1945') {
+        this.unlockOverride();
+        return {
+          success: true,
+          output: '[ANULACIÓN DE SEGURIDAD] Código histórico verificado. Interruptor Maestro desbloqueado.',
+          isStrike: false,
+        };
+      }
+      this.addStrike(`Código de anulación incorrecto: '${input}'`);
+      return {
+        success: false,
+        output: 'ERROR: Código histórico incorrecto. Intento de anulación registrado. +1 STRIKE.',
+        isStrike: true,
+      };
+    }
 
     // Flujo de contraseña admin (primer paso: sudo -admin → solicitar password)
     if (this.awaitingAdminPassword) {
@@ -388,20 +407,45 @@ export class BombContext implements IBombSubject {
     }
 
     if (input === 'sudo override') {
-      this.unlockOverride();
+      if (this.isOverrideUnlocked) {
+        return {
+          success: true,
+          output: '[ANULACIÓN DE SEGURIDAD] El interruptor Maestro ya está desbloqueado.',
+          isStrike: false,
+        };
+      }
+      this.awaitingOverrideCode = true;
       return {
         success: true,
-        output: '[ANULACIÓN DE SEGURIDAD] Acceso concedido. Interruptor Maestro físicamente desbloqueado.',
+        output: '[sudo] Código requerido: año del fin de la Segunda Guerra Mundial (4 dígitos):',
         isStrike: false,
       };
+    }
+
+    const commandHints: Record<string, string> = {
+      'scan --spatial': 'Suma ángulos interiores: (n - 2) x 180°. Encuentra dos polígonos cuya suma sea 900°.',
+      'decode --seq': 'Completa Fibonacci hasta el octavo término: 1, 1, 2, 3, 5, 8, 13, [ ? ].',
+      'query --trivia oxygen': 'Elemento: gas esencial para la respiración y que favorece la combustión. Determina su Z.',
+      'query --trivia iron': 'Elemento: metal de símbolo Fe, usado en estructuras y herramientas. Determina su Z.',
+      'query --trivia': 'Pistas elementales:\n1. Gas esencial para la respiración y que favorece la combustión.\n2. Metal de símbolo Fe, usado en estructuras y herramientas.\nDetermina el número atómico Z de ambos.',
+      'analyze --geometry': 'Suma los ángulos interiores de tres polígonos regulares. Para cada uno: (n - 2) x 180°. Objetivo: 1800°.',
+      'calc --math': 'La frecuencia de resonancia es el doble del primer número primo de dos dígitos.',
+    };
+
+    if (commandHints[input]) {
+      return { success: true, output: commandHints[input], isStrike: false };
     }
 
     if (input === 'help') {
       return {
         success: true,
         output: `COMANDOS DEL SISTEMA DISPONIBLES:
-  analyze --geometry : Diagnóstico de módulo de cifrado geométrico
-  sudo override      : Desbloqueo forzado de interruptor maestro
+        scan --spatial             : Análisis de orientación espacial
+        decode --seq               : Análisis de secuencia Fibonacci
+        query --trivia             : Consultar pistas de dos elementos y sus números atómicos
+        analyze --geometry        : Análisis de ángulos geométricos
+        calc --math                : Análisis de resonancia
+        sudo override              : Solicitar código histórico para el interruptor maestro
   sudo -admin        : Autenticación root (requiere contraseña)
   status             : Diagnóstico general de módulos y telemetría
   clear              : Limpiar buffer de pantalla`,
@@ -448,6 +492,7 @@ ${modulesStatus}`,
     this.isAdminUnlocked = false;
     this.isOverrideUnlocked = false;
     this.awaitingAdminPassword = false;
+    this.awaitingOverrideCode = false;
     this.strategy = new DeductiveStrategy();
     this.logMessages = [];
 

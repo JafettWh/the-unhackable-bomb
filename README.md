@@ -34,16 +34,16 @@ Proyecto de simulación interactiva para la asignatura **Arquitectura de Softwar
 
 ---
 
-## ⚡ Guía de Resolución Rápida (< 60 Segundos) - Semilla BOMB-882
+## Módulos
 
-1. **Módulo 1 (Botón de Fases):** Observa el segundero del reloj principal. Cuando sea un número **PAR** (ej. 14:58, 14:56), pulsa el **Botón Azul**. El estado cambiará a `DESBLOQUEADO (DEDUCTIVO)`.
-2. **Módulo 2 (Pantalla Numérica):** Con 0 strikes y display en 4, pulsa la tecla **4** (Fórmula: `Display - Strikes` = 4 - 0 = 4).
-3. **Módulo 3 (Cables de Colores):** Como el Módulo 1 es azul, corta únicamente el **CABLE AZUL**.
-4. **Módulo 4 (Teclado de Símbolos):** Ignora el efecto glitch del decorador y pulsa en secuencia: **Lambda (λ)** y luego **Delta (Δ)**.
-5. **Módulo 5 (Dial de Frecuencia Hz):** Observa los minutos restantes en el reloj (ej. 14 min). Ajusta el dial a `Minutos × 10` = **140 Hz** y pulsa **Sintonizar / Confirmar**.
-6. **Módulo 6 (Interruptor Maestro):** Con los módulos 1 al 5 en verde, haz clic para **levantar la cubierta de seguridad** y acciona la palanca **KILL**.
+1. Resuelve la pista angular del módulo espacial con dos polígonos cuya suma sea 900°.
+2. Completa Fibonacci: `1, 1, 2, 3, 5, 8, 13, ?`.
+3. Usa `query --trivia` para obtener las pistas de oxígeno e hierro y sus números atómicos.
+4. Usa `analyze --geometry` para la pista de ángulos interiores y selecciona tres polígonos.
+5. Usa `calc --math` para la pista de resonancia.
+6. Ejecuta `sudo override` y responde `1945`, el año del fin de la Segunda Guerra Mundial.
 
-¡Bomba desactivada con éxito y fanfarria de victoria!
+Los comandos de análisis no generan strikes; los comandos desconocidos y las respuestas incorrectas sí.
 
 ---
 
@@ -69,3 +69,7 @@ npm test
 ```bash
 npm run build
 ```
+
+## GitHub Pages
+
+El repositorio está configurado para publicar desde GitHub Actions. Sube los cambios a la rama `main` y en GitHub habilita **Settings → Pages → Build and deployment → GitHub Actions**. El workflow compila con `npm ci` y publica `dist`; la URL esperada es `https://jafettwh.github.io/the-unhackable-bomb/`.

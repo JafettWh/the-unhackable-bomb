@@ -1,7 +1,7 @@
 import React from 'react';
-import { Compass, Navigation } from 'lucide-react';
+import { Compass } from 'lucide-react';
 import { SpatialOrientationModule } from '../../modules/SpatialOrientationModule';
-import { CardinalDirection } from '../../types';
+import { GeometricShape } from '../../types';
 import { soundManager } from '../../core/SoundManager';
 
 interface Module1Props {
@@ -14,9 +14,9 @@ export const Module1SpatialOrientation: React.FC<Module1Props> = ({ module, onAc
   const isUnlocked = module.getIsUnlocked();
   const currentStep = module.getCurrentStep();
 
-  const handlePress = (dir: CardinalDirection) => {
+  const handlePress = (shape: GeometricShape) => {
     if (isSolved || !isUnlocked) return;
-    const success = module.pressDirection(dir);
+    const success = module.pressShape(shape);
     if (success) {
       if (module.getSolved()) {
         soundManager.playSuccess();
@@ -29,9 +29,17 @@ export const Module1SpatialOrientation: React.FC<Module1Props> = ({ module, onAc
     onAction();
   };
 
+  const shapes: Array<{ id: GeometricShape; symbol: string; name: string }> = [
+    { id: 'TRIANGLE', symbol: '△', name: 'Triángulo' },
+    { id: 'SQUARE', symbol: '□', name: 'Cuadrado' },
+    { id: 'PENTAGON', symbol: '⬠', name: 'Pentágono' },
+    { id: 'HEXAGON', symbol: '⬡', name: 'Hexágono' },
+    { id: 'OCTAGON', symbol: '⯄', name: 'Octágono' },
+  ];
+
   return (
     <div className="w-full flex flex-col items-center justify-center gap-3">
-      {/* Indicador de Secuencia Cardinal */}
+      {/* Indicador de secuencia poligonal */}
       <div className="flex items-center gap-2 bg-black/60 px-3 py-1 rounded border border-cyan-500/30 text-[11px] font-mono">
         <Compass className="w-3.5 h-3.5 text-cyan-400 animate-spin-slow" />
         <span className="text-slate-400">PASOS:</span>
@@ -43,7 +51,7 @@ export const Module1SpatialOrientation: React.FC<Module1Props> = ({ module, onAc
                 : 'bg-slate-900 text-slate-500 border border-slate-800'
             }`}
           >
-            {currentStep >= 1 ? 'E' : '—'}
+            {currentStep >= 1 ? '△' : '—'}
           </span>
           <span className="text-slate-600">→</span>
           <span
@@ -53,70 +61,28 @@ export const Module1SpatialOrientation: React.FC<Module1Props> = ({ module, onAc
                 : 'bg-slate-900 text-slate-500 border border-slate-800'
             }`}
           >
-            {isSolved ? 'S' : '—'}
+              {isSolved ? '⬡' : '—'}
           </span>
         </div>
       </div>
 
-      {/* Rosa de los Vientos / Teclado Cardinal */}
-      <div className="relative w-36 h-36 flex items-center justify-center">
-        {/* Líneas de mira de cuadrante */}
-        <div className="absolute inset-x-2 h-[1px] bg-slate-800/80 pointer-events-none" />
-        <div className="absolute inset-y-2 w-[1px] bg-slate-800/80 pointer-events-none" />
-
-        {/* Botón Norte (N) */}
-        <button
-          id="btn-cardinal-n"
-          onClick={() => handlePress('N')}
-          disabled={isSolved || !isUnlocked}
-          className="absolute top-0 px-3.5 py-1.5 rounded bg-slate-900 hover:bg-slate-800 active:bg-cyan-950 border border-slate-700 hover:border-cyan-500 text-slate-200 font-bold font-mono text-xs transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-md hover:glow-blue active:scale-95"
-        >
-          N
-        </button>
-
-        {/* Botón Oeste (O) */}
-        <button
-          id="btn-cardinal-o"
-          onClick={() => handlePress('O')}
-          disabled={isSolved || !isUnlocked}
-          className="absolute left-0 px-3.5 py-1.5 rounded bg-slate-900 hover:bg-slate-800 active:bg-cyan-950 border border-slate-700 hover:border-cyan-500 text-slate-200 font-bold font-mono text-xs transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-md hover:glow-blue active:scale-95"
-        >
-          O
-        </button>
-
-        {/* Núcleo Central Decorativo */}
-        <div className="w-8 h-8 rounded-full bg-slate-950 border border-slate-700 flex items-center justify-center">
-          <Navigation className={`w-4 h-4 ${isSolved ? 'text-[#00ff66]' : 'text-cyan-400 animate-pulse'}`} />
-        </div>
-
-        {/* Botón Este (E) */}
-        <button
-          id="btn-cardinal-e"
-          onClick={() => handlePress('E')}
-          disabled={isSolved || !isUnlocked}
-          className="absolute right-0 px-3.5 py-1.5 rounded bg-slate-900 hover:bg-slate-800 active:bg-cyan-950 border border-slate-700 hover:border-cyan-500 text-slate-200 font-bold font-mono text-xs transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-md hover:glow-blue active:scale-95"
-        >
-          E
-        </button>
-
-        {/* Botón Sur (S) */}
-        <button
-          id="btn-cardinal-s"
-          onClick={() => handlePress('S')}
-          disabled={isSolved || !isUnlocked}
-          className="absolute bottom-0 px-3.5 py-1.5 rounded bg-slate-900 hover:bg-slate-800 active:bg-cyan-950 border border-slate-700 hover:border-cyan-500 text-slate-200 font-bold font-mono text-xs transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-md hover:glow-blue active:scale-95"
-        >
-          S
-        </button>
+      <div className="grid grid-cols-3 gap-2 w-full max-w-[220px]">
+        {shapes.map((shape) => (
+          <button
+            key={shape.id}
+            id={`btn-spatial-${shape.id.toLowerCase()}`}
+            onClick={() => handlePress(shape.id)}
+            disabled={isSolved || !isUnlocked}
+            title={shape.name}
+            className="min-h-14 flex flex-col items-center justify-center gap-1 rounded bg-slate-900 hover:bg-slate-800 active:bg-cyan-950 border border-slate-700 hover:border-cyan-500 text-cyan-200 font-mono transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-md active:scale-95"
+          >
+            <span className="text-xl leading-none">{shape.symbol}</span>
+            <span className="text-[9px] text-slate-400">{shape.name}</span>
+          </button>
+        ))}
       </div>
 
-      <p className="text-[10px] text-slate-400 font-mono text-center">
-        {isSolved ? (
-          <span className="text-[#00ff66] font-bold">✓ Orientación Espacial Validada</span>
-        ) : (
-          <span>Consulte pista: <code className="text-cyan-300 font-bold">scan --spatial</code></span>
-        )}
-      </p>
+      {isSolved && <p className="text-[10px] text-[#00ff66] font-mono text-center font-bold">✓ Orientación Espacial Validada</p>}
     </div>
   );
 };

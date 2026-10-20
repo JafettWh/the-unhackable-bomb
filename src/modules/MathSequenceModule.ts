@@ -4,8 +4,8 @@ import { ModuleId, BombEvent } from '../types';
 /**
  * MÓDULO 2: Secuencia Matemática (Strategy)
  * UI: Teclado numérico y una pantalla que muestra la progresión determinista.
- * Comando Terminal: decode --seq -> "Sexto término de la proporción áurea (Fibonacci)."
- * Resolución: 1, 1, 2, 3, 5, [ 8 ]. El usuario debe teclear 8.
+ * Comando Terminal: decode --seq -> Completar el octavo término de Fibonacci.
+ * Resolución: 1, 1, 2, 3, 5, 8, 13, [ 21 ].
  * Patrón Observer: Se desbloquea automáticamente cuando el Módulo 1 es resuelto.
  * Al resolver, activa el Módulo 3.
  */
@@ -14,8 +14,8 @@ export class MathSequenceModule extends BaseModule {
   public readonly title: string = 'MÓDULO 02 // SECUENCIA MATEMÁTICA';
   public readonly subtitle: string = 'PROPORCIÓN ÁUREA Y FIBONACCI';
 
-  public readonly sequenceDisplay: string = '1, 1, 2, 3, 5, [ ? ]';
-  public readonly targetValue: number = 8;
+  public readonly sequenceDisplay: string = '1, 1, 2, 3, 5, 8, 13, [ ? ]';
+  public readonly targetValue: number = 21;
   private selectedInput: number | null = null;
 
   constructor() {
