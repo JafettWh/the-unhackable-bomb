@@ -140,12 +140,16 @@ export const TerminalComponent: React.FC<TerminalComponentProps> = ({ bomb }) =>
         type: 'error',
       });
     } else {
-      soundManager.playSuccess();
+      if (result.success) {
+        soundManager.playSuccess();
+      } else {
+        soundManager.playClick();
+      }
       addLogEntry({
         id: `out-${Date.now()}`,
         timestamp: timeStr,
         text: result.output,
-        type: trimmed.startsWith('sudo') ? 'success' : 'hint',
+        type: result.success && trimmed.startsWith('sudo') ? 'success' : 'hint',
       });
     }
   };

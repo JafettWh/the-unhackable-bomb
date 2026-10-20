@@ -1,11 +1,12 @@
 import { BaseModule } from './BaseModule';
 import { ModuleId, BombEvent } from '../types';
+import { PhysicalChallenge } from './ChallengeVariants';
 
 /**
  * MÓDULO 5: Cálculo Físico (Observer/Strategy)
  * UI: Ajustador de Frecuencia (Hz) con dial y osciloscopio visual.
- * Comando Terminal: calc --math -> quinto armónico de 13 Hz y su fase correspondiente.
- * Resolución: 5 * 13 = 65 Hz; 360° / 5 = 72°.
+ * Comando Terminal: calc --math -> consultar frecuencia fundamental y armónico.
+ * Resolución: calcular la frecuencia armónica y la fase indicadas por la variante.
  * Patrón Observer: Se desbloquea automáticamente cuando el Módulo 4 es resuelto.
  * Al resolver, activa el Módulo 6.
  */
@@ -16,16 +17,22 @@ export class PhysicalCalculationModule extends BaseModule {
 
   public readonly minHz: number = 0;
   public readonly maxHz: number = 100;
-  public readonly targetHz: number = 65;
+  public readonly fundamentalHz: number;
+  public readonly harmonic: number;
+  public readonly targetHz: number;
   public readonly minPhase: number = 0;
   public readonly maxPhase: number = 360;
-  public readonly targetPhase: number = 72;
+  public readonly targetPhase: number;
 
   private currentHz: number = 50;
   private currentPhase: number = 180;
 
-  constructor() {
+  constructor(challenge: PhysicalChallenge) {
     super();
+    this.fundamentalHz = challenge.fundamentalHz;
+    this.harmonic = challenge.harmonic;
+    this.targetHz = challenge.fundamentalHz * challenge.harmonic;
+    this.targetPhase = 360 / challenge.harmonic;
     this.isUnlocked = false; // Bloqueado hasta resolver Módulo 4
   }
 
@@ -76,6 +83,10 @@ export class PhysicalCalculationModule extends BaseModule {
 
   public getPhase(): number {
     return this.currentPhase;
+  }
+
+  public getTerminalHint(): string {
+    return `Frecuencia fundamental: ${this.fundamentalHz} Hz. Calcula el armónico ${this.harmonic} y la fase 360° / ${this.harmonic}.`;
   }
 
   public reset(): void {

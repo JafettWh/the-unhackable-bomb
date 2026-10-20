@@ -17,8 +17,8 @@ Proyecto de simulación interactiva para la asignatura **Arquitectura de Softwar
    - Orientación a objetos (POO) estricta en TypeScript con interfaces, clases abstractas y modificadores de acceso (`public`, `private`, `protected`).
    - Sin código rígido (*hardcoded*).
    - Integración formal de los patrones de diseño de la rúbrica.
-3. **Resolución en Vivo por el Creador:**
-   - La semilla determinista `BOMB-882` permite al creador resolver los 6 módulos en **menos de 60 segundos** frente a la clase.
+3. **Variantes de partida:**
+   - Cada partida selecciona aleatoriamente una de cinco configuraciones de respuestas para los seis módulos.
 
 ---
 
@@ -36,12 +36,12 @@ Proyecto de simulación interactiva para la asignatura **Arquitectura de Softwar
 
 ## Módulos
 
-1. Completa la matriz visual; cada fila suma los cuadrados de sus dos primeros valores.
-2. Completa Fibonacci: `1, 1, 2, 3, 5, 8, 13, ?`.
-3. Usa `query --trivia` para obtener las pistas de oxígeno e hierro y sus números atómicos.
-4. Usa `analyze --geometry` para la pista de ángulos interiores y selecciona tres polígonos.
-5. Usa `calc --math`; ajusta el quinto armónico a 65 Hz y su fase a 72°.
-6. Ejecuta `sudo override` y responde `1945`, el año del fin de la Segunda Guerra Mundial.
+1. Completa la matriz visual con la operación indicada por `scan --spatial`.
+2. Completa la serie numérica indicada por `decode --seq`.
+3. Usa `query --trivia` para recibir dos pistas de elementos y sus números atómicos.
+4. Usa `analyze --geometry` para conocer el objetivo angular de la variante.
+5. Usa `calc --math` para calcular la frecuencia armónica y su fase.
+6. Tras resolver los módulos 1–5, ejecuta `sudo override` y responde al código histórico indicado.
 
 Los comandos de análisis no generan strikes; los comandos desconocidos y las respuestas incorrectas sí.
 

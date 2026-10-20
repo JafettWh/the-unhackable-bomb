@@ -53,7 +53,7 @@ export const StartScreen: React.FC<StartScreenProps> = ({ onStartConnection, see
         {/* Insignia de Clasificación */}
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900/90 border border-slate-700 text-slate-300 text-xs mb-6 shadow-inner">
           <ShieldAlert className="w-4 h-4 text-amber-400" />
-          <span className="tracking-wider">SISTEMA CIBERNÉTICO DETERMINISTA DE ALTA COMPLEJIDAD</span>
+          <span className="tracking-wider">SISTEMA CIBERNÉTICO // 5 VARIANTES DE DESACTIVACIÓN</span>
         </div>
 
         {/* Título Principal Retro-Futurista */}
@@ -101,7 +101,7 @@ export const StartScreen: React.FC<StartScreenProps> = ({ onStartConnection, see
           </div>
 
           <p className="text-slate-300 text-xs leading-relaxed border-t border-slate-800/80 pt-3">
-            Para desarmar el núcleo, debe ingresar comandos en la <strong className="text-cyan-300">Terminal Interactiva</strong> para extraer las pistas deterministas. Los módulos inician bloqueados; resolver cada etapa desbloquea la siguiente bajo el patrón Observer.
+            Para desarmar el núcleo, debe ingresar comandos en la <strong className="text-cyan-300">Terminal Interactiva</strong> para consultar las pistas de esta partida. Los módulos inician bloqueados; resolver cada etapa desbloquea la siguiente bajo el patrón Observer.
           </p>
         </div>
 

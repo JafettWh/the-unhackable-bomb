@@ -35,18 +35,21 @@ export const Module1SpatialOrientation: React.FC<Module1Props> = ({ module, onAc
       </div>
 
       <div className="grid grid-cols-3 gap-1.5 w-full max-w-[210px]" aria-label="Matriz numérica">
-        {['2', '3', '13', '4', '5', '41', '6', '7', '?'].map((value, index) => (
-          <div
-            key={`${index}-${value}`}
-            className={`aspect-square flex items-center justify-center border text-sm font-black ${
-              value === '?'
-                ? 'bg-cyan-950/70 border-cyan-400 text-cyan-200 text-lg'
-                : 'bg-black/70 border-slate-700 text-slate-200'
-            }`}
-          >
-            {isSolved && value === '?' ? module.targetValue : value}
-          </div>
-        ))}
+        {module.matrixRows.flatMap((row, rowIndex) => row.map((value, columnIndex) => {
+          const isMissingValue = value === null;
+          return (
+            <div
+              key={`${rowIndex}-${columnIndex}`}
+              className={`aspect-square flex items-center justify-center border text-sm font-black ${
+                isMissingValue
+                  ? 'bg-cyan-950/70 border-cyan-400 text-cyan-200 text-lg'
+                  : 'bg-black/70 border-slate-700 text-slate-200'
+              }`}
+            >
+              {isMissingValue ? isSolved ? module.targetValue : '?' : value}
+            </div>
+          );
+        }))}
       </div>
 
       <form onSubmit={handleSubmit} className="flex items-center gap-2 w-full max-w-[210px]">

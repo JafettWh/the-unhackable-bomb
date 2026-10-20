@@ -1,25 +1,29 @@
 import { BaseModule } from './BaseModule';
 import { ModuleId, BombEvent } from '../types';
+import { MathChallenge } from './ChallengeVariants';
 
 /**
  * MÓDULO 2: Secuencia Matemática (Strategy)
- * UI: Teclado numérico y una pantalla que muestra la progresión determinista.
- * Comando Terminal: decode --seq -> Completar el octavo término de Fibonacci.
- * Resolución: 1, 1, 2, 3, 5, 8, 13, [ 21 ].
+ * UI: Teclado numérico y una pantalla con la secuencia de la variante activa.
+ * Comando Terminal: decode --seq -> Consultar la secuencia incompleta.
  * Patrón Observer: Se desbloquea automáticamente cuando el Módulo 1 es resuelto.
  * Al resolver, activa el Módulo 3.
  */
 export class MathSequenceModule extends BaseModule {
   public readonly id: ModuleId = 'module_2';
   public readonly title: string = 'MÓDULO 02 // SECUENCIA MATEMÁTICA';
-  public readonly subtitle: string = 'PROPORCIÓN ÁUREA Y FIBONACCI';
+  public readonly subtitle: string = 'PATRONES NUMÉRICOS';
 
-  public readonly sequenceDisplay: string = '1, 1, 2, 3, 5, 8, 13, [ ? ]';
-  public readonly targetValue: number = 21;
+  public readonly sequence: number[];
+  public readonly targetValue: number;
+  public readonly choices: number[];
   private selectedInput: number | null = null;
 
-  constructor() {
+  constructor(challenge: MathChallenge) {
     super();
+    this.sequence = challenge.sequence;
+    this.targetValue = challenge.answer;
+    this.choices = challenge.choices;
     this.isUnlocked = false; // Bloqueado hasta resolver Módulo 1
   }
 
@@ -53,6 +57,10 @@ export class MathSequenceModule extends BaseModule {
 
   public getSelectedInput(): number | null {
     return this.selectedInput;
+  }
+
+  public getSequenceDisplay(isSolved: boolean = false): string {
+    return `${this.sequence.join(', ')}, [ ${isSolved ? this.targetValue : '?'} ]`;
   }
 
   public reset(): void {

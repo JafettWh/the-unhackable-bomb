@@ -24,17 +24,17 @@ export const Module2MathSequence: React.FC<Module2Props> = ({ module, onAction }
     onAction();
   };
 
-  const keypadButtons = [1, 2, 3, 4, 5, 6, 7, 8, 9, 13, 21];
+  const keypadButtons = module.choices;
 
   return (
     <div className="w-full flex flex-col items-center justify-center gap-3">
       {/* Pantalla LED de la Secuencia Matemática */}
       <div className="w-full max-w-[220px] bg-black/80 px-3 py-2 rounded-lg border-2 border-cyan-500/50 shadow-[inset_0_0_12px_rgba(0,229,255,0.2)] text-center">
         <span className="text-[10px] text-slate-500 block uppercase font-mono tracking-widest mb-0.5">
-          FIBONACCI REGISTER
+          SEQUENCE REGISTER
         </span>
         <div className="font-mono text-sm md:text-base font-black tracking-wider text-cyan-300 text-glow-blue">
-          {isSolved ? '1, 1, 2, 3, 5, 8, 13, [ 21 ]' : '1, 1, 2, 3, 5, 8, 13, [ ? ]'}
+          {module.getSequenceDisplay(isSolved)}
         </div>
       </div>
 
@@ -49,7 +49,7 @@ export const Module2MathSequence: React.FC<Module2Props> = ({ module, onAction }
               onClick={() => handleKeyClick(num)}
               disabled={isSolved || !isUnlocked}
               className={`py-2 rounded-lg font-mono font-black text-sm transition-all cursor-pointer border shadow-md active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed ${
-                isSolved && num === 8
+                isSolved && num === module.targetValue
                   ? 'bg-emerald-950 text-[#00ff66] border-[#00ff66] glow-green'
                   : isCurrentSelected && !isSolved
                   ? 'bg-red-950 text-red-400 border-red-500 animate-pulse'
@@ -63,7 +63,7 @@ export const Module2MathSequence: React.FC<Module2Props> = ({ module, onAction }
       </div>
 
       <p className="text-[10px] text-slate-400 font-mono text-center">
-        {isSolved && <span className="text-[#00ff66] font-bold">✓ Octavo Término Fibonacci Ingresado</span>}
+        {isSolved && <span className="text-[#00ff66] font-bold">✓ Término de la Serie Validado</span>}
       </p>
     </div>
   );

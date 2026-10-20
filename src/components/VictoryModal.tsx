@@ -60,7 +60,7 @@ export const VictoryModal: React.FC<VictoryModalProps> = ({
           ¡BOMBA DESACTIVADA CON ÉXITO!
         </h2>
         <p className="font-mono text-xs text-emerald-400 mb-6 uppercase tracking-widest">
-          SISTEMA DETERMINISTA BOMB-882 NEUTRALIZADO
+          VARIANTE BOMB-882 NEUTRALIZADA
         </p>
 
         {/* Estadísticas de la partida */}

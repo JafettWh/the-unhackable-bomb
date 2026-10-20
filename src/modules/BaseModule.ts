@@ -56,7 +56,7 @@ export abstract class BaseModule implements IBombObserver {
   public abstract update(event: BombEvent): void;
 
   /**
-   * Restablecimiento determinista a valores iniciales de la semilla BOMB-882
+  * Restablecimiento del estado del módulo sin cambiar la variante de partida
    */
   public abstract reset(): void;
 }

@@ -1,30 +1,26 @@
 import { IDefusalStrategy } from './IDefusalStrategy';
 import { StrategyType, GeometricShape, VisualDirection } from '../../types';
+import { ChallengeVariant, getInteriorAngle } from '../../modules/ChallengeVariants';
 
 /**
  * Patrón: STRATEGY (Concreta)
  * DeductiveStrategy: Estrategia deductiva activa para resolución secuencial.
  * Basada estrictamente en la semilla BOMB-882:
- * 1. Espacial: 6² + 7² = 85.
- * 2. Matemática: "Octavo término Fibonacci" -> 1, 1, 2, 3, 5, 8, 13, 21.
- * 3. Científica: Oxígeno (O), Z = 8; Hierro (Fe), Z = 26.
- * 4. Geométrico: ángulos interiores de TRIANGLE + PENTAGON + OCTAGON = 1800°.
- * 5. Física: quinto armónico de 13 Hz -> 65 Hz, fase 360° / 5 = 72°.
+ * Las soluciones se inyectan desde la variante elegida por ModuleFactory.
  * 6. Maestro: Anulación sudo override confirmada y módulos 1 a 5 resueltos.
  */
 export class DeductiveStrategy implements IDefusalStrategy {
   public readonly type: StrategyType = 'DEDUCTIVE';
   public readonly name: string = 'Estrategia Deductiva (Núcleo Sincronizado)';
   public readonly description: string =
-    'El núcleo de la bomba ha sido acoplado a las ecuaciones deterministas de la semilla BOMB-882.';
+    'El núcleo de la bomba ha sido acoplado a la configuración aleatoria de esta partida.';
 
-  private readonly spatialSolution = 85;
-  /** Módulo 4: suma de ángulos interiores = 1800° */
-  private readonly geometricSolution: GeometricShape[] = ['TRIANGLE', 'PENTAGON', 'OCTAGON'];
   private readonly visualRoutingSolution: VisualDirection[] = ['UP', 'LEFT', 'DOWN'];
 
+  constructor(private readonly variant: ChallengeVariant) {}
+
   public verifySpatialAnswer(answer: number): boolean {
-    return answer === this.spatialSolution;
+    return answer === this.variant.spatial.answer;
   }
 
   public verifyVisualRoutingStep(currentStep: number, direction: VisualDirection): boolean {
@@ -33,28 +29,32 @@ export class DeductiveStrategy implements IDefusalStrategy {
   }
 
   public verifyMathSequence(inputNumber: number): boolean {
-    return inputNumber === 21;
+    return inputNumber === this.variant.math.answer;
   }
 
   public verifyScientificTrivia(elementSymbol: string, atomicNumber: number): boolean {
     const normalizedSymbol = elementSymbol.trim().toUpperCase();
     const normalizedAtomicNumber = Number(atomicNumber);
-    return (normalizedSymbol === 'O' && normalizedAtomicNumber === 8)
-      || (normalizedSymbol === 'FE' && normalizedAtomicNumber === 26);
+    return this.variant.science.elements.some((element) =>
+      element.symbol.toUpperCase() === normalizedSymbol
+      && element.atomicNumber === normalizedAtomicNumber
+    );
   }
 
   public verifyGeometricStep(currentStep: number, shape: GeometricShape): boolean {
-    if (currentStep < 0 || currentStep >= this.geometricSolution.length) return false;
-    return this.geometricSolution[currentStep] === shape;
+    if (currentStep < 0 || currentStep >= this.variant.geometry.sequence.length) return false;
+    return this.variant.geometry.sequence[currentStep] === shape;
   }
 
   public verifyGeometricSequence(sequence: GeometricShape[]): boolean {
-    if (sequence.length !== this.geometricSolution.length) return false;
-    return sequence.every((shape, idx) => shape === this.geometricSolution[idx]);
+    if (sequence.length !== this.variant.geometry.sequence.length) return false;
+    return sequence.every((shape, idx) => shape === this.variant.geometry.sequence[idx]);
   }
 
   public verifyPhysicalCalculation(frequencyHz: number, phaseDegrees: number): boolean {
-    return Number(frequencyHz) === 65 && Number(phaseDegrees) === 72;
+    const targetFrequency = this.variant.physical.fundamentalHz * this.variant.physical.harmonic;
+    const targetPhase = 360 / this.variant.physical.harmonic;
+    return Number(frequencyHz) === targetFrequency && Number(phaseDegrees) === targetPhase;
   }
 
   public verifyMasterSwitch(overrideGranted: boolean, allPrecedingSolved: boolean): boolean {

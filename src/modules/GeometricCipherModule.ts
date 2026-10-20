@@ -1,11 +1,11 @@
 import { BaseModule } from './BaseModule';
 import { ModuleId, BombEvent, GeometricShape } from '../types';
+import { GeometryChallenge } from './ChallengeVariants';
 
 /**
  * MÓDULO 4: Cifrado Geométrico (Decorator)
  * UI: Cinco polígonos que el jugador selecciona en orden.
- * Lógica: La suma de sus ángulos interiores debe ser 1800°.
- *   - Solución: TRIANGLE(180°) + PENTAGON(540°) + OCTAGON(1080°)
+ * Lógica: La suma de los ángulos interiores debe coincidir con el objetivo de la variante.
  * Comando Terminal: analyze --geometry
  * Patrón Observer: Se desbloquea automáticamente cuando el Módulo 3 es resuelto.
  * Al resolver, activa el Módulo 5.
@@ -15,13 +15,15 @@ export class GeometricCipherModule extends BaseModule {
   public readonly title: string = 'MÓDULO 04 // CIFRADO GEOMÉTRICO';
   public readonly subtitle: string = 'DEDUCCIÓN ESPACIAL — ÁNGULOS INTERIORES';
 
-  public readonly targetInteriorAngleSum: number = 1800;
-  public readonly targetSequence: GeometricShape[] = ['TRIANGLE', 'PENTAGON', 'OCTAGON'];
+  public readonly targetInteriorAngleSum: number;
+  public readonly targetSequence: GeometricShape[];
   private currentStepIndex: number = 0;
   private pressedShapes: GeometricShape[] = [];
 
-  constructor() {
+  constructor(challenge: GeometryChallenge) {
     super();
+    this.targetInteriorAngleSum = challenge.targetAngleSum;
+    this.targetSequence = challenge.sequence;
     this.isUnlocked = false; // Bloqueado hasta resolver Módulo 3
   }
 
@@ -66,6 +68,10 @@ export class GeometricCipherModule extends BaseModule {
 
   public getPressedShapes(): GeometricShape[] {
     return [...this.pressedShapes];
+  }
+
+  public getTerminalHint(): string {
+    return `Suma los ángulos interiores de 3 polígonos regulares. Cada figura aporta (lados - 2) x 180°. Objetivo: ${this.targetInteriorAngleSum}°.`;
   }
 
   public reset(): void {

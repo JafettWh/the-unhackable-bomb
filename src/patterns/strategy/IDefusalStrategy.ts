@@ -12,26 +12,26 @@ export interface IDefusalStrategy {
 
   /**
    * Módulo 1: Orientación Espacial
-  * Valida paso o secuencia completa de polígonos
+  * Valida el valor calculado para la matriz visual
    */
   verifySpatialAnswer(answer: number): boolean;
   verifyVisualRoutingStep(currentStep: number, direction: VisualDirection): boolean;
 
   /**
    * Módulo 2: Secuencia Matemática
-   * Valida término de la proporción Fibonacci
+  * Valida el término de la secuencia numérica de la variante activa
    */
   verifyMathSequence(inputNumber: number): boolean;
 
   /**
    * Módulo 3: Conocimiento Científico
-   * Valida elemento químico y número atómico Z
+  * Valida los elementos y números atómicos de la variante activa
    */
   verifyScientificTrivia(elementSymbol: string, atomicNumber: number): boolean;
 
   /**
    * Módulo 4: Cifrado Geométrico
-   * Valida paso o secuencia de figuras geométricas por suma de lados
+  * Valida paso o secuencia de figuras por suma de ángulos interiores
    */
   verifyGeometricStep(currentStep: number, shape: GeometricShape): boolean;
   verifyGeometricSequence(sequence: GeometricShape[]): boolean;

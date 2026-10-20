@@ -136,7 +136,7 @@ export function App() {
                 id="module-wrapper-2"
                 moduleNumber="02"
                 title="SECUENCIA MATEMÁTICA"
-                subtitle="ESTRATEGIA FIBONACCI"
+                subtitle="PATRONES NUMÉRICOS"
                 isSolved={module2.getSolved()}
                 isLocked={!module2.getIsUnlocked()}
                 isActive={module2.getIsUnlocked() && !module2.getSolved()}

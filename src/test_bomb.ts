@@ -7,6 +7,50 @@ import { GlitchDecorator } from './patterns/decorator/GlitchDecorator';
 import { GeometricCipherModule } from './modules/GeometricCipherModule';
 import { PhysicalCalculationModule } from './modules/PhysicalCalculationModule';
 import { MasterSwitchModule } from './modules/MasterSwitchModule';
+import { CHALLENGE_VARIANTS } from './modules/ChallengeVariants';
+
+function verifyVariant(variantIndex: number): void {
+  const variantBomb = new BombContext(ModuleFactory.SEED, false, variantIndex);
+  const variant = CHALLENGE_VARIANTS[variantIndex];
+  variantBomb.startBomb();
+
+  const blockedOverride = variantBomb.executeTerminalCommand('sudo override');
+  console.assert(!blockedOverride.success && blockedOverride.isStrike === false, `Variante ${variantIndex + 1}: override bloqueado sin strike`);
+  console.assert(variantBomb.getStrikes() === 0, `Variante ${variantIndex + 1}: intento temprano sin penalización`);
+  console.assert(variantBomb.getIsOverrideUnlocked() === false, `Variante ${variantIndex + 1}: override sigue bloqueado`);
+
+  const mod1 = variantBomb.getModule<SpatialOrientationModule>('module_1')!;
+  const mod2 = variantBomb.getModule<MathSequenceModule>('module_2')!;
+  const mod3 = variantBomb.getModule<ScientificTriviaModule>('module_3')!;
+  const mod4 = variantBomb.getModule<GlitchDecorator>('module_4')!.getWrapped() as GeometricCipherModule;
+  const mod5 = variantBomb.getModule<PhysicalCalculationModule>('module_5')!;
+  const mod6 = variantBomb.getModule<MasterSwitchModule>('module_6')!;
+
+  variantBomb.executeTerminalCommand('scan --spatial');
+  mod1.submitAnswer(variant.spatial.answer);
+  variantBomb.executeTerminalCommand('decode --seq');
+  mod2.inputNumber(variant.math.answer);
+  variantBomb.executeTerminalCommand('query --trivia');
+  variant.science.elements.forEach((element) => {
+    mod3.setElement(element.symbol);
+    mod3.setDialZ(element.atomicNumber);
+    mod3.confirmSubmission();
+  });
+  variantBomb.executeTerminalCommand('analyze --geometry');
+  mod4.targetSequence.forEach((shape) => mod4.pressShape(shape));
+  variantBomb.executeTerminalCommand('calc --math');
+  mod5.setFrequency(variant.physical.fundamentalHz * variant.physical.harmonic);
+  mod5.setPhase(360 / variant.physical.harmonic);
+  mod5.confirmTuning();
+
+  console.assert(variantBomb.getStrikes() === 0, `Variante ${variantIndex + 1}: respuestas correctas sin strikes`);
+  const overridePrompt = variantBomb.executeTerminalCommand('sudo override');
+  console.assert(overridePrompt.isStrike === false, `Variante ${variantIndex + 1}: override disponible tras resolver módulos`);
+  console.assert(overridePrompt.output.includes(variant.override.clue), `Variante ${variantIndex + 1}: pista histórica correspondiente`);
+  const overrideCode = variantBomb.executeTerminalCommand(variant.override.code);
+  console.assert(overrideCode.isStrike === false && mod6.getIsOverrideAuthorized(), `Variante ${variantIndex + 1}: código correcto autorizado`);
+  variantBomb.stopTimer();
+}
 
 function runTerminalEditionTestSuite() {
   console.log('======================================================================');
@@ -14,7 +58,7 @@ function runTerminalEditionTestSuite() {
   console.log('======================================================================');
 
   // Inicialización de la Bomba en Estado Standby (Pantalla de Inicio)
-  const bomb = new BombContext(ModuleFactory.SEED, false);
+  const bomb = new BombContext(ModuleFactory.SEED, false, 0);
 
   console.assert(bomb.getStatus() === 'STANDBY', 'El estado inicial debe ser STANDBY');
   console.assert(bomb.getSpeedMultiplier() === 0, 'Velocidad inicial en STANDBY debe ser 0.0x');
@@ -45,6 +89,10 @@ function runTerminalEditionTestSuite() {
   console.assert(mod5.getIsUnlocked() === false, 'Módulo 5 debe iniciar bloqueado');
   console.assert(mod6.getIsUnlocked() === false, 'Módulo 6 debe iniciar bloqueado');
   console.log('✓ Secuencia estricta confirmada: Módulo 1 activo, Módulos 2-6 bloqueados');
+
+  const blockedOverride = bomb.executeTerminalCommand('sudo override');
+  console.assert(!blockedOverride.success && blockedOverride.isStrike === false, 'Override prematuro debe bloquearse sin strike');
+  console.assert(bomb.getStrikes() === 0 && !bomb.getIsOverrideUnlocked(), 'Override prematuro no debe penalizar ni desbloquear');
 
   // 2. Probar Comandos de Terminal
   const cmdSpatial = bomb.executeTerminalCommand('scan --spatial');
@@ -121,11 +169,20 @@ function runTerminalEditionTestSuite() {
   console.assert(bomb.getStatus() === 'DEFUSED', 'La bomba debe estar en estado DEFUSED');
   console.log('✓ Módulo 6 resuelto exitosamente: ¡BOMBA DESACTIVADA! (ESTADO: DEFUSED)');
 
+  for (let variantIndex = 0; variantIndex < CHALLENGE_VARIANTS.length; variantIndex++) {
+    verifyVariant(variantIndex);
+  }
+  console.log(`✓ Las ${CHALLENGE_VARIANTS.length} variantes completas se resuelven con comandos dinámicos.`);
+
+  const resetBomb = new BombContext(ModuleFactory.SEED, false, 0);
+  resetBomb.reset(ModuleFactory.SEED, false);
+  console.assert(resetBomb.getVariantIndex() !== 0, 'Un reinicio debe elegir una variante distinta a la partida anterior');
+
   console.log('\n======================================================================');
   console.log('--- TEST 2: SIMULACIÓN DE ESCALADO DE ERRORES & COMANDOS INVÁLIDOS ---');
   console.log('======================================================================');
 
-  const bombErr = new BombContext(ModuleFactory.SEED, true);
+  const bombErr = new BombContext(ModuleFactory.SEED, true, 0);
   const initialTime = bombErr.getRemainingSeconds();
 
   // 1er Strike vía comando inválido en Terminal

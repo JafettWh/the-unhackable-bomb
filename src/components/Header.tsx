@@ -117,7 +117,7 @@ export const Header: React.FC<HeaderProps> = ({
               </span>
             </div>
             <p className="font-mono text-[11px] text-slate-400">
-              TERMINAL EDITION // SECUENCIA DETERMINISTA DE 6 MÓDULOS
+              TERMINAL EDITION // 5 VARIANTES DE 6 MÓDULOS
             </p>
           </div>
         </div>

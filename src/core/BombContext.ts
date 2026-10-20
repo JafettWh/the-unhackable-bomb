@@ -9,6 +9,7 @@ import { DeductiveStrategy } from '../patterns/strategy/DeductiveStrategy';
 import { ModuleFactory } from '../patterns/factory/ModuleFactory';
 import { BaseModule } from '../modules/BaseModule';
 import { MasterSwitchModule } from '../modules/MasterSwitchModule';
+import { CHALLENGE_VARIANTS, ChallengeVariant } from '../modules/ChallengeVariants';
 import {
   BombEvent,
   BombStatus,
@@ -27,6 +28,8 @@ export class BombContext implements IBombSubject {
 
   private state: IBombState;
   private strategy: IDefusalStrategy;
+  private variantIndex: number;
+  private variant: ChallengeVariant;
   private observers: Set<IBombObserver> = new Set();
   private modules: BaseModule[] = [];
 
@@ -42,9 +45,13 @@ export class BombContext implements IBombSubject {
   private listeners: Set<() => void> = new Set();
   private logMessages: Array<{ time: string; text: string; type: 'info' | 'warning' | 'danger' | 'success' }> = [];
 
-  constructor(seed: string = ModuleFactory.SEED, startImmediately: boolean = false) {
-    this.strategy = new DeductiveStrategy();
-    this.initializeModules(seed);
+  constructor(seed: string = ModuleFactory.SEED, startImmediately: boolean = false, variantIndex?: number) {
+    this.variantIndex = ModuleFactory.normalizeVariantIndex(
+      variantIndex ?? ModuleFactory.randomVariantIndex()
+    );
+    this.variant = CHALLENGE_VARIANTS[this.variantIndex];
+    this.strategy = new DeductiveStrategy(this.variant);
+    this.initializeModules(seed, this.variantIndex);
 
     if (startImmediately) {
       this.state = new NormalState();
@@ -56,14 +63,14 @@ export class BombContext implements IBombSubject {
       this.state.onEnter(this);
     }
 
-    this.addLog('Sistema preparado. Semilla determinista: ' + seed, 'info');
+    this.addLog(`Sistema preparado. Variante aleatoria ${this.variantIndex + 1}/${ModuleFactory.VARIANT_COUNT}.`, 'info');
   }
 
   /**
-   * Instancia módulos deterministas usando ModuleFactory y los suscribe como observadores
+  * Instancia los módulos de la variante elegida y los suscribe como observadores
    */
-  private initializeModules(seed: string): void {
-    this.modules = ModuleFactory.createModules(seed);
+  private initializeModules(seed: string, variantIndex: number): void {
+    this.modules = ModuleFactory.createModules(seed, variantIndex);
     this.observers.clear();
 
     this.modules.forEach((mod) => {
@@ -341,12 +348,25 @@ export class BombContext implements IBombSubject {
   private awaitingAdminPassword: boolean = false;
   private awaitingOverrideCode: boolean = false;
 
+  private areDefusalModulesSolved(): boolean {
+    return this.modules
+      .filter((module) => module.id !== 'module_6')
+      .every((module) => module.getSolved());
+  }
+
   public executeTerminalCommand(rawInput: string): { success: boolean; output: string; isStrike: boolean } {
     const input = rawInput.trim().toLowerCase();
 
     if (this.awaitingOverrideCode) {
       this.awaitingOverrideCode = false;
-      if (input === '1945') {
+      if (!this.areDefusalModulesSolved()) {
+        return {
+          success: false,
+          output: '[OVERRIDE BLOQUEADO] Resuelve primero los módulos 01–05. No se ha registrado strike.',
+          isStrike: false,
+        };
+      }
+      if (input === this.variant.override.code) {
         this.unlockOverride();
         return {
           success: true,
@@ -401,12 +421,19 @@ export class BombContext implements IBombSubject {
     if (input === 'analyze --geometry') {
       return {
         success: true,
-        output: 'MÓDULO 04 // Cifrado Geométrico activo. El sistema requiere activación de figuras.',
+        output: `Suma los ángulos interiores de 3 polígonos regulares. Cada figura aporta (lados - 2) x 180°. Objetivo: ${this.variant.geometry.targetAngleSum}°.`,
         isStrike: false,
       };
     }
 
     if (input === 'sudo override') {
+      if (!this.areDefusalModulesSolved()) {
+        return {
+          success: false,
+          output: '[OVERRIDE BLOQUEADO] Resuelve primero los módulos 01–05. No se ha registrado strike.',
+          isStrike: false,
+        };
+      }
       if (this.isOverrideUnlocked) {
         return {
           success: true,
@@ -417,19 +444,16 @@ export class BombContext implements IBombSubject {
       this.awaitingOverrideCode = true;
       return {
         success: true,
-        output: '[sudo] Código requerido: año del fin de la Segunda Guerra Mundial (4 dígitos):',
+        output: `[sudo] Código requerido (4 dígitos): ${this.variant.override.clue}`,
         isStrike: false,
       };
     }
 
     const commandHints: Record<string, string> = {
       'scan --spatial': 'En cada fila, eleva al cuadrado los dos primeros valores y suma los resultados.',
-      'decode --seq': 'Completa Fibonacci hasta el octavo término: 1, 1, 2, 3, 5, 8, 13, [ ? ].',
-      'query --trivia oxygen': 'Elemento: gas esencial para la respiración y que favorece la combustión. Determina su Z.',
-      'query --trivia iron': 'Elemento: metal de símbolo Fe, usado en estructuras y herramientas. Determina su Z.',
-      'query --trivia': 'Pistas elementales:\n1. Gas esencial para la respiración y que favorece la combustión.\n2. Metal de símbolo Fe, usado en estructuras y herramientas.\nDetermina el número atómico Z de ambos.',
-      'analyze --geometry': 'Suma los ángulos interiores de tres polígonos regulares. Para cada uno: (n - 2) x 180°. Objetivo: 1800°.',
-      'calc --math': 'El resonador tiene frecuencia fundamental de 13 Hz. Usa el quinto armónico (f = 5 x 13) y alinea la fase en 360° / 5.',
+      'decode --seq': `Completa la secuencia: ${this.variant.math.sequence.join(', ')}, [ ? ].`,
+      'query --trivia': `Pistas elementales:\n${this.variant.science.clues.map((clue, index) => `${index + 1}. ${clue}`).join('\n')}\nDetermina el número atómico Z de ambos.`,
+      'calc --math': `Frecuencia fundamental: ${this.variant.physical.fundamentalHz} Hz. Calcula el armónico ${this.variant.physical.harmonic} y la fase 360° / ${this.variant.physical.harmonic}.`,
     };
 
     if (commandHints[input]) {
@@ -445,7 +469,7 @@ export class BombContext implements IBombSubject {
         query --trivia             : Consultar pistas de dos elementos y sus números atómicos
         analyze --geometry        : Análisis de ángulos geométricos
         calc --math                : Análisis de resonancia
-        sudo override              : Solicitar código histórico para el interruptor maestro
+        sudo override              : Disponible tras resolver los módulos 01–05
   sudo -admin        : Autenticación root (requiere contraseña)
   status             : Diagnóstico general de módulos y telemetría
   clear              : Limpiar buffer de pantalla`,
@@ -463,7 +487,7 @@ export class BombContext implements IBombSubject {
 
       return {
         success: true,
-        output: `DIAGNÓSTICO DETERMINISTA // BOMB-882:
+        output: `DIAGNÓSTICO DE PARTIDA // BOMB-882 // VARIANTE ${this.variantIndex + 1}/${ModuleFactory.VARIANT_COUNT}:
   Tiempo Restante: ${timeStr} | Strikes: ${this.strikes}/${BombContext.MAX_STRIKES} | Vel: ${this.speedMultiplier.toFixed(1)}x
   Estado Global  : ${this.state.displayName}
   Admin Root     : ${this.isAdminUnlocked ? 'HABILITADO' : 'BLOQUEADO'}
@@ -485,7 +509,7 @@ ${modulesStatus}`,
 
   // ===================== REINICIO DETERMINISTA =====================
 
-  public reset(seed: string = ModuleFactory.SEED, startInNormalState: boolean = true): void {
+  public reset(seed: string = ModuleFactory.SEED, startInNormalState: boolean = true, variantIndex?: number): void {
     this.stopTimer();
     this.remainingSeconds = BombContext.INITIAL_TIME_SECONDS;
     this.strikes = 0;
@@ -493,10 +517,14 @@ ${modulesStatus}`,
     this.isOverrideUnlocked = false;
     this.awaitingAdminPassword = false;
     this.awaitingOverrideCode = false;
-    this.strategy = new DeductiveStrategy();
+    this.variantIndex = ModuleFactory.normalizeVariantIndex(
+      variantIndex ?? ModuleFactory.randomVariantIndex(this.variantIndex)
+    );
+    this.variant = CHALLENGE_VARIANTS[this.variantIndex];
+    this.strategy = new DeductiveStrategy(this.variant);
     this.logMessages = [];
 
-    this.initializeModules(seed);
+    this.initializeModules(seed, this.variantIndex);
 
     if (startInNormalState) {
       this.speedMultiplier = 1.0;
@@ -509,7 +537,7 @@ ${modulesStatus}`,
       this.state.onEnter(this);
     }
 
-    this.addLog('Bomba reiniciada. Semilla determinista: ' + seed, 'info');
+    this.addLog(`Bomba reiniciada. Variante ${this.variantIndex + 1}/${ModuleFactory.VARIANT_COUNT}.`, 'info');
 
     this.notify({
       type: 'RESET',
@@ -534,6 +562,10 @@ ${modulesStatus}`,
 
   public getStrategy(): IDefusalStrategy {
     return this.strategy;
+  }
+
+  public getVariantIndex(): number {
+    return this.variantIndex;
   }
 
   public getRemainingSeconds(): number {

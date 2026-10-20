@@ -1,5 +1,6 @@
 import { BaseModule } from './BaseModule';
 import { ModuleId, BombEvent } from '../types';
+import { SpatialChallenge } from './ChallengeVariants';
 
 /**
  * MÓDULO 1: Matriz Lógica (State)
@@ -13,10 +14,13 @@ export class SpatialOrientationModule extends BaseModule {
   public readonly title: string = 'MÓDULO 01 // MATRIZ LÓGICA';
   public readonly subtitle: string = 'ANÁLISIS VISUAL DE PATRONES';
 
-  public readonly targetValue: number = 85;
+  public readonly matrixRows: Array<[number, number, number | null]>;
+  public readonly targetValue: number;
 
-  constructor() {
+  constructor(challenge: SpatialChallenge) {
     super();
+    this.matrixRows = challenge.rows;
+    this.targetValue = challenge.answer;
     this.isUnlocked = true; // El Módulo 1 está activo al inicio
   }
 
@@ -38,6 +42,10 @@ export class SpatialOrientationModule extends BaseModule {
     }
     this.triggerStrike(`Resultado ${answer} incorrecto. La matriz sigue sin estabilizar.`);
     return false;
+  }
+
+  public getTerminalHint(): string {
+    return 'En cada fila, eleva al cuadrado los dos primeros valores y suma los resultados.';
   }
 
   public reset(): void {

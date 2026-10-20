@@ -1,11 +1,11 @@
 import { BaseModule } from './BaseModule';
 import { ModuleId, BombEvent, ChemicalElement } from '../types';
+import { ScienceChallenge } from './ChallengeVariants';
 
 /**
  * MÓDULO 3: Conocimiento Científico (Observer)
  * UI: Selector de elementos químicos y dial numérico para número atómico Z.
- * Comando Terminal: query --trivia -> "Z del gas que alimenta el fuego."
- * Resolución: Oxígeno (O) con Z = 8.
+ * Comando Terminal: query --trivia -> pistas de los dos elementos de la variante.
  * Patrón Observer: Se desbloquea automáticamente cuando el Módulo 2 es resuelto.
  * Al resolver, activa el Módulo 4.
  */
@@ -28,13 +28,13 @@ export class ScientificTriviaModule extends BaseModule {
   private selectedElement: string = 'H';
   private currentDialZ: number = 1;
   private solvedElements: number = 0;
-  private readonly targetElements = [
-    { symbol: 'O', atomicNumber: 8 },
-    { symbol: 'Fe', atomicNumber: 26 },
-  ];
+  private readonly targetElements: [ChemicalElement, ChemicalElement];
+  private readonly clues: [string, string];
 
-  constructor() {
+  constructor(challenge: ScienceChallenge) {
     super();
+    this.targetElements = challenge.elements;
+    this.clues = challenge.clues;
     this.isUnlocked = false; // Bloqueado hasta resolver Módulo 2
   }
 
@@ -98,6 +98,14 @@ export class ScientificTriviaModule extends BaseModule {
 
   public getSolvedElements(): number {
     return this.solvedElements;
+  }
+
+  public getTargetElements(): [ChemicalElement, ChemicalElement] {
+    return this.targetElements;
+  }
+
+  public getTerminalHint(): string {
+    return this.clues.map((clue, index) => `${index + 1}. ${clue}`).join('\n');
   }
 
   public reset(): void {

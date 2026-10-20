@@ -127,7 +127,7 @@ export const DefusalManualModal: React.FC<ManualModalProps> = ({
                 <div className="p-4 rounded-lg bg-slate-900/90 border border-slate-800">
                   <h4 className="text-cyan-400 font-bold mb-1 font-display">MÓDULO 2: SECUENCIA MATEMÁTICA</h4>
                   <p className="text-slate-300 text-xs">
-                    Pantalla LED con Fibonacci extendida y teclado numérico. Requiere ingresar el término que completa la serie.
+                    Pantalla LED con una secuencia numérica variable y teclado. Requiere ingresar el término que completa el patrón.
                   </p>
                 </div>
 
@@ -148,7 +148,7 @@ export const DefusalManualModal: React.FC<ManualModalProps> = ({
                 <div className="p-4 rounded-lg bg-slate-900/90 border border-slate-800">
                   <h4 className="text-cyan-400 font-bold mb-1 font-display">MÓDULO 5: CÁLCULO FÍSICO</h4>
                   <p className="text-slate-300 text-xs">
-                    Oscilador con controles de frecuencia y fase. Requiere calcular el quinto armónico de 13 Hz y alinear la fase de un ciclo.
+                    Oscilador con controles de frecuencia y fase. Calcula el armónico y la fase indicados por la consulta de terminal.
                   </p>
                 </div>
 
@@ -168,10 +168,10 @@ export const DefusalManualModal: React.FC<ManualModalProps> = ({
               <div className="p-4 rounded-lg bg-emerald-950/40 border border-[#00ff66]/50 text-emerald-200">
                 <h4 className="font-bold font-display text-sm text-[#00ff66] flex items-center gap-2">
                   <Zap className="w-4 h-4" />
-                  SECUENCIA ÓPTIMA DETERMINISTA (RESOLUCIÓN EXACTA)
+                  PROCEDIMIENTO TÁCTICO PARA CUALQUIER VARIANTE
                 </h4>
                 <p className="text-xs text-slate-300 mt-1">
-                  Semilla canónica: <strong className="text-[#00ff66]">BOMB-882</strong>. Esta guía permite desarmar la bomba en menos de 60 segundos conociendo la lógica exacta de cada etapa:
+                  Cada partida elige una de cinco configuraciones. Usa las pistas de la terminal para consultar los valores de la variante activa:
                 </p>
               </div>
 
@@ -183,8 +183,7 @@ export const DefusalManualModal: React.FC<ManualModalProps> = ({
                   <div>
                     <h5 className="font-bold text-white text-xs">Módulo 1: Matriz Lógica</h5>
                     <p className="text-slate-400 text-xs mt-0.5">
-                      Cada fila suma los cuadrados de sus dos primeros valores: 2² + 3² = 13; 4² + 5² = 41.<br />
-                      <strong>Acción:</strong> Calcular el valor faltante de la tercera fila. Desbloquea el Módulo 2.
+                      Ejecuta <code>scan --spatial</code> y aplica la operación indicada a las dos primeras cifras de la fila incompleta. Desbloquea el Módulo 2.
                     </p>
                   </div>
                 </div>
@@ -196,8 +195,7 @@ export const DefusalManualModal: React.FC<ManualModalProps> = ({
                   <div>
                     <h5 className="font-bold text-white text-xs">Módulo 2: Secuencia Matemática</h5>
                     <p className="text-slate-400 text-xs mt-0.5">
-                      Secuencia visible: 1, 1, 2, 3, 5, 8, 13, ?<br />
-                      <strong>Acción:</strong> Teclear el número <strong className="text-[#00ff66]">21</strong> (octavo término Fibonacci). Desbloquea el Módulo 3.
+                      Ejecuta <code>decode --seq</code>, identifica el patrón mostrado y selecciona el siguiente término. Desbloquea el Módulo 3.
                     </p>
                   </div>
                 </div>
@@ -209,8 +207,8 @@ export const DefusalManualModal: React.FC<ManualModalProps> = ({
                   <div>
                     <h5 className="font-bold text-white text-xs">Módulo 3: Conocimiento Científico</h5>
                     <p className="text-slate-400 text-xs mt-0.5">
-                      Oxígeno (O): Z = 8. Hierro (Fe): Z = 26.<br />
-                      <strong>Acción:</strong> Estabilizar ambos elementos con sus números atómicos. Desbloquea el Módulo 4.
+                      Ejecuta <code>query --trivia</code> para obtener las dos pistas de elementos de esta partida.<br />
+                      <strong>Acción:</strong> Seleccionar cada elemento y establecer su número atómico. Desbloquea el Módulo 4.
                     </p>
                   </div>
                 </div>
@@ -222,8 +220,8 @@ export const DefusalManualModal: React.FC<ManualModalProps> = ({
                   <div>
                     <h5 className="font-bold text-white text-xs">Módulo 4: Cifrado Geométrico</h5>
                     <p className="text-slate-400 text-xs mt-0.5">
-                      Objetivo = 1800°. Suma los ángulos interiores de los polígonos seleccionados.<br />
-                      <strong>Acción:</strong> Presionar <strong className="text-[#00ff66]">△ Triángulo</strong>, <strong className="text-[#00ff66]">⬠ Pentágono</strong> y <strong className="text-[#00ff66]">Octágono</strong>. Desbloquea el Módulo 5.
+                      Ejecuta <code>analyze --geometry</code> para conocer el objetivo de esta variante. Calcula los ángulos interiores de tres figuras.<br />
+                      <strong>Acción:</strong> Seleccionar las figuras en el orden correcto. Desbloquea el Módulo 5.
                     </p>
                   </div>
                 </div>
@@ -235,8 +233,8 @@ export const DefusalManualModal: React.FC<ManualModalProps> = ({
                   <div>
                     <h5 className="font-bold text-white text-xs">Módulo 5: Cálculo Físico</h5>
                     <p className="text-slate-400 text-xs mt-0.5">
-                      Frecuencia fundamental: 13 Hz. Quinto armónico: 5 × 13 = <strong>65 Hz</strong>. Fase: 360° ÷ 5 = <strong>72°</strong>.<br />
-                      <strong>Acción:</strong> Ajustar frecuencia a <strong className="text-[#00ff66]">65 Hz</strong> y fase a <strong className="text-[#00ff66]">72°</strong>. Desbloquea el Módulo 6.
+                      Ejecuta <code>calc --math</code> para ver la frecuencia fundamental y el armónico requerido.<br />
+                      <strong>Acción:</strong> Ajustar la frecuencia resultante y la fase correspondiente. Desbloquea el Módulo 6.
                     </p>
                   </div>
                 </div>
@@ -248,7 +246,7 @@ export const DefusalManualModal: React.FC<ManualModalProps> = ({
                   <div>
                     <h5 className="font-bold text-white text-xs">Módulo 6: Ejecución Final (Master Switch)</h5>
                     <p className="text-slate-400 text-xs mt-0.5">
-                      Ejecuta <code className="text-cyan-300 font-bold">sudo override</code> e introduce el código histórico de cuatro dígitos: <strong className="text-[#00ff66]">1945</strong>.<br />
+                      Tras resolver los módulos 1–5, ejecuta <code className="text-cyan-300 font-bold">sudo override</code> y responde con el código histórico indicado.<br />
                       <strong>Acción:</strong> Levantar la cubierta de seguridad y accionar el botón de <strong className="text-[#00ff66]">Corte Total</strong>. La bomba entra en <strong>DefusedState</strong> (Victoria).
                     </p>
                   </div>

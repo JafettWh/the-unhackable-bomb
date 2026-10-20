@@ -122,7 +122,7 @@ export const Module3ScientificTrivia: React.FC<Module3Props> = ({ module, onActi
         <span>{isSolved ? 'ESTABILIZACIÓN COMPLETA' : `VALIDAR ELEMENTO ${solvedElements + 1} / 2`}</span>
       </button>
 
-      {isSolved && <p className="text-[10px] text-[#00ff66] font-mono text-center font-bold">✓ Oxígeno y hierro estabilizados</p>}
+      {isSolved && <p className="text-[10px] text-[#00ff66] font-mono text-center font-bold">✓ {module.getTargetElements().map((element) => element.name).join(' y ')} estabilizados</p>}
     </div>
   );
 };

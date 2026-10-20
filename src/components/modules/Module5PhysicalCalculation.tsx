@@ -149,7 +149,7 @@ export const Module5PhysicalCalculation: React.FC<Module5Props> = ({ module, onA
         }`}
       >
         <Zap className="w-3.5 h-3.5" />
-        <span>{isSolved ? 'RESONANCIA CALIBRADA (65 Hz / 72°)' : 'SINTONIZAR RESONANCIA'}</span>
+        <span>{isSolved ? `RESONANCIA CALIBRADA (${module.targetHz} Hz / ${module.targetPhase}°)` : 'SINTONIZAR RESONANCIA'}</span>
       </button>
 
       {isSolved && <p className="text-[10px] text-[#00ff66] font-mono text-center font-bold">✓ Resonancia calibrada</p>}
