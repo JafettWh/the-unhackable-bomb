@@ -20,15 +20,11 @@ export class ExplodedState implements IBombState {
     context.stopTimer();
   }
 
-  public handlePhaseButtonClick(context: BombContext, currentSeconds: number): boolean {
-    return false;
-  }
-
-  public handleStrike(context: BombContext): void {
+  public handleStrike(_context: BombContext): void {
     // Estado final alcanzado: detonación irreversible
   }
 
-  public handleTick(context: BombContext): void {
+  public handleTick(_context: BombContext): void {
     // Reloj detenido
   }
 }

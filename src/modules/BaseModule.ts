@@ -4,9 +4,8 @@ import type { BombContext } from '../core/BombContext';
 
 /**
  * Clase Base Abstracta para todos los Módulos de la Bomba.
- * Implementa IBombObserver para garantizar la sincronización reactiva
- * con los eventos del BombContext (reloj, strikes, cambios de estado y velocidad).
- * Sigue los principios SOLID (OCP, LSP, DIP).
+ * Implementa IBombObserver para garantizar la resolución secuencial
+ * y la reactividad a los eventos del BombContext.
  */
 export abstract class BaseModule implements IBombObserver {
   public abstract readonly id: ModuleId;
@@ -14,6 +13,7 @@ export abstract class BaseModule implements IBombObserver {
   public abstract readonly subtitle: string;
 
   protected isSolved: boolean = false;
+  protected isUnlocked: boolean = false;
   protected context: BombContext | null = null;
 
   public get observerId(): string {
@@ -26,6 +26,14 @@ export abstract class BaseModule implements IBombObserver {
 
   public getSolved(): boolean {
     return this.isSolved;
+  }
+
+  public getIsUnlocked(): boolean {
+    return this.isUnlocked;
+  }
+
+  public setUnlocked(unlocked: boolean): void {
+    this.isUnlocked = unlocked;
   }
 
   protected markSolved(): void {

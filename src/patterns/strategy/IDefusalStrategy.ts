@@ -1,10 +1,9 @@
-import { StrategyType } from '../../types';
+import { StrategyType, CardinalDirection, GeometricShape } from '../../types';
 
 /**
  * Patrón de Comportamiento: STRATEGY
- * Define la familia de algoritmos intercambiables para la validación de módulos.
- * Permite cambiar dinámicamente la lógica de verificación en tiempo de ejecución
- * cuando la bomba cambia de estado (de NormalState a UnlockedState).
+ * Define la familia de algoritmos para validar las lógicas complejas de los módulos
+ * (Orientación Espacial, Secuencia Matemática, Trivia Científica, Cifrado Geométrico y Resonancia Física).
  */
 export interface IDefusalStrategy {
   readonly type: StrategyType;
@@ -12,31 +11,40 @@ export interface IDefusalStrategy {
   readonly description: string;
 
   /**
-   * Validación para Módulo 1 (Botón de Fases)
+   * Módulo 1: Orientación Espacial
+   * Valida paso o secuencia completa de orientación cardinal
    */
-  verifyPhaseButton(currentSeconds: number): boolean;
+  verifySpatialStep(currentStep: number, direction: CardinalDirection): boolean;
+  verifySpatialSequence(sequence: CardinalDirection[]): boolean;
 
   /**
-   * Validación para Módulo 2 (Pantalla Numérica)
-   * Regla deductiva: Tecla = Display - Strikes
+   * Módulo 2: Secuencia Matemática
+   * Valida término de la proporción Fibonacci
    */
-  verifyNumericInput(inputNumber: number, displayValue: number, currentStrikes: number): boolean;
+  verifyMathSequence(inputNumber: number): boolean;
 
   /**
-   * Validación para Módulo 3 (Cables de Colores)
-   * Regla deductiva: Depende del color del Módulo 1 (Azul)
+   * Módulo 3: Conocimiento Científico
+   * Valida elemento químico y número atómico Z
    */
-  verifyWireCut(cutColor: string, targetColor: string): boolean;
+  verifyScientificTrivia(elementSymbol: string, atomicNumber: number): boolean;
 
   /**
-   * Validación para Módulo 4 (Teclado de Símbolos)
-   * Regla deductiva: Secuencia estricta λ -> Δ
+   * Módulo 4: Cifrado Geométrico
+   * Valida paso o secuencia de figuras geométricas por suma de lados
    */
-  verifySymbolStep(pressedSymbol: string, currentStepIndex: number, targetSequence: string[]): boolean;
+  verifyGeometricStep(currentStep: number, shape: GeometricShape): boolean;
+  verifyGeometricSequence(sequence: GeometricShape[]): boolean;
 
   /**
-   * Validación para Módulo 5 (Dial de Frecuencia)
-   * Regla deductiva: Frecuencia = Minutos restantes * 10
+   * Módulo 5: Cálculo Físico
+   * Valida frecuencia de resonancia en Hz
    */
-  verifyFrequency(selectedHz: number, remainingMinutes: number): boolean;
+  verifyPhysicalCalculation(frequencyHz: number): boolean;
+
+  /**
+   * Módulo 6: Ejecución Final
+   * Valida prerrequisitos y anulación administrativa
+   */
+  verifyMasterSwitch(overrideGranted: boolean, allPrecedingSolved: boolean): boolean;
 }

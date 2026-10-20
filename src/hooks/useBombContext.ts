@@ -19,12 +19,11 @@ export function useBombContext() {
   const [strategy, setStrategy] = useState<StrategyType>(bomb.getStrategy().type);
   const [modules, setModules] = useState<BaseModule[]>(bomb.getAllModules());
   const [logs, setLogs] = useState(bomb.getLogs());
+  const [isAdminUnlocked, setIsAdminUnlocked] = useState<boolean>(bomb.getIsAdminUnlocked());
+  const [isOverrideUnlocked, setIsOverrideUnlocked] = useState<boolean>(bomb.getIsOverrideUnlocked());
   const [tickCounter, setTickCounter] = useState<number>(0);
 
   useEffect(() => {
-    // Iniciar temporizador al montar
-    bomb.startTimer();
-
     // Suscribir listener de cambios
     const unsubscribe = bomb.subscribe(() => {
       setStatus(bomb.getStatus());
@@ -34,6 +33,8 @@ export function useBombContext() {
       setStrategy(bomb.getStrategy().type);
       setModules([...bomb.getAllModules()]);
       setLogs(bomb.getLogs());
+      setIsAdminUnlocked(bomb.getIsAdminUnlocked());
+      setIsOverrideUnlocked(bomb.getIsOverrideUnlocked());
       setTickCounter((prev) => prev + 1);
     });
 
@@ -43,8 +44,12 @@ export function useBombContext() {
     };
   }, [bomb]);
 
-  const reset = () => {
-    bomb.reset();
+  const startBomb = () => {
+    bomb.startBomb();
+  };
+
+  const reset = (toStandby: boolean = false) => {
+    bomb.reset(undefined, !toStandby);
   };
 
   return {
@@ -56,7 +61,10 @@ export function useBombContext() {
     strategy,
     modules,
     logs,
+    isAdminUnlocked,
+    isOverrideUnlocked,
     tickCounter,
+    startBomb,
     reset,
   };
 }

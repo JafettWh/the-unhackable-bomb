@@ -4,11 +4,12 @@ import { BombEvent } from '../../types';
 
 /**
  * Patrón Estructural: DECORATOR (Concreto)
- * SymbolDecorator: Envuelve al Módulo 4 (SymbolKeypadModule).
- * Añade distorsión visual, clases CSS de parpadeo (glitch/flicker)
- * e inestabilidad perceptual retro-futurista sin alterar la lógica de validación interna.
+ * GlitchDecorator: Envuelve al Módulo 4 (VisualRoutingModule).
+ * Añade interferencia visual severa, distorsión cromática, scanlines
+ * y jitter perceptual retro-futurista para dificultar la lectura directa
+ * de las direcciones sin alterar la lógica de validación interna.
  */
-export class SymbolDecorator extends ModuleDecorator {
+export class GlitchDecorator extends ModuleDecorator {
   private glitchActive: boolean = true;
   private glitchIntensity: 'low' | 'medium' | 'high' = 'medium';
   private flickerCounter: number = 0;
@@ -20,7 +21,6 @@ export class SymbolDecorator extends ModuleDecorator {
   public update(event: BombEvent): void {
     super.update(event);
 
-    // Reacciona al reloj o pánico intensificando el glitch
     if (event.type === 'TICK') {
       this.flickerCounter++;
       if (event.status === 'PANIC') {
@@ -38,12 +38,9 @@ export class SymbolDecorator extends ModuleDecorator {
     }
   }
 
-  /**
-   * Retorna las clases Tailwind y de animación para aplicar el efecto glitch en la UI
-   */
   public getVisualEffectsClass(): string {
     if (this.getSolved()) {
-      return 'border-[#00ff66]/50 bg-[#00ff66]/5';
+      return 'border-[#00ff66]/50 bg-[#00ff66]/5 shadow-[0_0_20px_rgba(0,255,102,0.2)]';
     }
 
     switch (this.glitchIntensity) {

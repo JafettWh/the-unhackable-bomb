@@ -5,8 +5,8 @@ import type { BombContext } from '../../core/BombContext';
 /**
  * Patrón: STATE (Concreto)
  * DefusedState: Estado final de victoria.
- * - Activado cuando el Módulo 6 (Interruptor Maestro) es encendido
- *   tras haber resuelto exitosamente los Módulos 1 al 5.
+ * - Activado cuando el Módulo 6 (Interruptor Maestro) es accionado
+ *   tras haber resuelto exitosamente los Módulos 1 al 5 y obtenido sudo override.
  * - Congela el temporizador y muestra el panel desarmado y condecoraciones.
  */
 export class DefusedState implements IBombState {
@@ -16,20 +16,15 @@ export class DefusedState implements IBombState {
   public readonly allowsInteraction: boolean = false;
 
   public onEnter(context: BombContext): void {
-    // Congela el reloj deteniendo el multiplicador
     context.setSpeedMultiplier(0.0);
     context.stopTimer();
   }
 
-  public handlePhaseButtonClick(context: BombContext, currentSeconds: number): boolean {
-    return false;
-  }
-
-  public handleStrike(context: BombContext): void {
+  public handleStrike(_context: BombContext): void {
     // Estado final alcanzado: no admite más strikes
   }
 
-  public handleTick(context: BombContext): void {
+  public handleTick(_context: BombContext): void {
     // Reloj detenido
   }
 }

@@ -1,15 +1,13 @@
 import { IBombState } from './IBombState';
 import { BombStatus } from '../../types';
 import type { BombContext } from '../../core/BombContext';
-import { DeductiveStrategy } from '../strategy/DeductiveStrategy';
 import { PanicState } from './PanicState';
 import { ExplodedState } from './ExplodedState';
 
 /**
  * Patrón: STATE (Concreto)
- * UnlockedState: Activado exitosamente por el Módulo 1 en un segundo PAR.
- * - Cambia la estrategia de validación global a DeductiveStrategy.
- * - Habilita la resolución lógica de los Módulos 2, 3, 4 y 5.
+ * UnlockedState: Estado desbloqueado con deducción matemática activa.
+ * - Sostiene la velocidad normal o sancionada según los strikes.
  */
 export class UnlockedState implements IBombState {
   public readonly name: BombStatus = 'UNLOCKED';
@@ -22,9 +20,6 @@ export class UnlockedState implements IBombState {
   }
 
   public onEnter(context: BombContext): void {
-    // Intercambia la estrategia global a DeductiveStrategy
-    context.setStrategy(new DeductiveStrategy());
-    // Mantiene la velocidad actual acorde a los strikes
     if (context.getStrikes() === 1) {
       this._speedMultiplier = 1.5;
       context.setSpeedMultiplier(1.5);
@@ -32,11 +27,6 @@ export class UnlockedState implements IBombState {
       this._speedMultiplier = 1.0;
       context.setSpeedMultiplier(1.0);
     }
-  }
-
-  public handlePhaseButtonClick(context: BombContext, currentSeconds: number): boolean {
-    // El núcleo ya se encuentra en estado desbloqueado
-    return true;
   }
 
   public handleStrike(context: BombContext): void {

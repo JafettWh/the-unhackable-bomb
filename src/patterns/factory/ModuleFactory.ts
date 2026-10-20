@@ -1,18 +1,17 @@
 import { BaseModule } from '../../modules/BaseModule';
-import { PhaseButtonModule } from '../../modules/PhaseButtonModule';
-import { NumericDisplayModule } from '../../modules/NumericDisplayModule';
-import { ColorWiresModule } from '../../modules/ColorWiresModule';
-import { SymbolKeypadModule } from '../../modules/SymbolKeypadModule';
-import { FrequencyDialModule } from '../../modules/FrequencyDialModule';
+import { SpatialOrientationModule } from '../../modules/SpatialOrientationModule';
+import { MathSequenceModule } from '../../modules/MathSequenceModule';
+import { ScientificTriviaModule } from '../../modules/ScientificTriviaModule';
+import { GeometricCipherModule } from '../../modules/GeometricCipherModule';
+import { PhysicalCalculationModule } from '../../modules/PhysicalCalculationModule';
 import { MasterSwitchModule } from '../../modules/MasterSwitchModule';
-import { SymbolDecorator } from '../decorator/SymbolDecorator';
+import { GlitchDecorator } from '../decorator/GlitchDecorator';
 
 /**
  * Patrón Creacional: FACTORY METHOD
- * ModuleFactory: Generación determinista de los 6 módulos de la bomba
- * basada en la semilla estática 'BOMB-882'.
- * Garantiza que las propiedades, cables, frecuencias y decoradores sean
- * 100% reproducibles para la resolución en menos de 60 segundos por el creador.
+ * ModuleFactory: Generación determinista de los 6 módulos de "The Unhackable Bomb - Terminal Edition"
+ * bajo la semilla fija 'BOMB-882'.
+ * Garantiza la secuencia estricta: Módulo 1 activo, Módulos 2 al 6 bloqueados secuencialmente.
  */
 export class ModuleFactory {
   public static readonly SEED = 'BOMB-882';
@@ -25,32 +24,25 @@ export class ModuleFactory {
       console.warn(`[ModuleFactory] Advertencia: Inicializando con semilla no canónica: ${seed}`);
     }
 
-    // Módulo 1: Botón de Fases (Color Azul)
-    const phaseButtonModule = new PhaseButtonModule();
+    // Módulo 1: Orientación Espacial (State) - Activo inicialmente
+    const mod1 = new SpatialOrientationModule();
 
-    // Módulo 2: Matriz Numérica (Display = 4, Teclado 1..4)
-    const numericDisplayModule = new NumericDisplayModule();
+    // Módulo 2: Secuencia Matemática (Strategy) - Desbloqueado por M1
+    const mod2 = new MathSequenceModule();
 
-    // Módulo 3: Derivación de Cables (Rojo, Azul, Verde, Amarillo)
-    const colorWiresModule = new ColorWiresModule();
+    // Módulo 3: Conocimiento Científico (Observer) - Desbloqueado por M2
+    const mod3 = new ScientificTriviaModule();
 
-    // Módulo 4: Matriz de Glifos envuelto con el Decorador Estructural SymbolDecorator
-    const rawSymbolModule = new SymbolKeypadModule();
-    const decoratedSymbolModule = new SymbolDecorator(rawSymbolModule);
+    // Módulo 4: Cifrado Geométrico decorado con interferencia visual GlitchDecorator
+    const rawMod4 = new GeometricCipherModule();
+    const mod4 = new GlitchDecorator(rawMod4);
 
-    // Módulo 5: Dial de Frecuencia Hz (10 a 200 Hz, sync con Observer)
-    const frequencyDialModule = new FrequencyDialModule();
+    // Módulo 5: Cálculo Físico (Observer/Strategy) - Desbloqueado por M4
+    const mod5 = new PhysicalCalculationModule();
 
-    // Módulo 6: Interruptor Maestro de Desconexión
-    const masterSwitchModule = new MasterSwitchModule();
+    // Módulo 6: Ejecución Final (Master Switch) - Desbloqueado por M5 + sudo override
+    const mod6 = new MasterSwitchModule();
 
-    return [
-      phaseButtonModule,
-      numericDisplayModule,
-      colorWiresModule,
-      decoratedSymbolModule,
-      frequencyDialModule,
-      masterSwitchModule,
-    ];
+    return [mod1, mod2, mod3, mod4, mod5, mod6];
   }
 }

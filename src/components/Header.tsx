@@ -2,14 +2,14 @@ import React from 'react';
 import {
   RotateCcw,
   BookOpen,
-  Zap,
   Volume2,
   VolumeX,
   Flame,
-  Terminal,
   Shield,
   Clock,
   Gauge,
+  Lock,
+  Unlock,
 } from 'lucide-react';
 import { BombStatus } from '../types';
 import { soundManager } from '../core/SoundManager';
@@ -21,10 +21,9 @@ interface HeaderProps {
   speedMultiplier: number;
   status: BombStatus;
   seed: string;
+  isAdminUnlocked: boolean;
   onReset: () => void;
-  onOpenManual: (tab?: 'blackbox' | 'creator' | 'architecture') => void;
-  onToggleTerminal: () => void;
-  showTerminal: boolean;
+  onOpenManual: (tab?: 'blackbox' | 'creator') => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -34,10 +33,9 @@ export const Header: React.FC<HeaderProps> = ({
   speedMultiplier,
   status,
   seed,
+  isAdminUnlocked,
   onReset,
   onOpenManual,
-  onToggleTerminal,
-  showTerminal,
 }) => {
   const [isMuted, setIsMuted] = React.useState(soundManager.getIsMuted());
 
@@ -52,8 +50,23 @@ export const Header: React.FC<HeaderProps> = ({
     setIsMuted(muted);
   };
 
+  const handleManualClick = () => {
+    if (!isAdminUnlocked) {
+      soundManager.playStrike();
+      alert("ACCESO DENEGADO [403 FORBIDDEN]\nEl Manual de Desactivación está bloqueado por el administrador.\nIntroduzca el comando 'sudo -admin' en la Terminal interactiva para desbloquear privilegios root.");
+      return;
+    }
+    soundManager.playClick();
+    onOpenManual('blackbox');
+  };
+
   const getStatusBadge = () => {
     switch (status) {
+      case 'STANDBY':
+        return {
+          text: 'EN ESPERA // STANDBY',
+          className: 'bg-slate-900 text-slate-400 border-slate-700',
+        };
       case 'UNLOCKED':
         return {
           text: 'DESBLOQUEADO (DEDUCTIVO)',
@@ -77,8 +90,8 @@ export const Header: React.FC<HeaderProps> = ({
       case 'NORMAL':
       default:
         return {
-          text: 'NORMAL / PROTEGIDO',
-          className: 'bg-slate-900 text-slate-300 border-slate-700',
+          text: 'NORMAL / SECUENCIAL',
+          className: 'bg-slate-900 text-cyan-300 border-cyan-700/60',
         };
     }
   };
@@ -86,7 +99,7 @@ export const Header: React.FC<HeaderProps> = ({
   const statusBadge = getStatusBadge();
 
   return (
-    <header className="w-full bg-[#0b0f17] border-b-2 border-slate-800 shadow-2xl relative z-30">
+    <header className="w-full bg-[#0b0f17] border-b-2 border-slate-800 shadow-2xl relative z-30 font-mono">
       {/* Barra Superior con Título y Acciones */}
       <div className="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
         {/* Título de la Aplicación y Semilla */}
@@ -100,35 +113,43 @@ export const Header: React.FC<HeaderProps> = ({
                 THE UNHACKABLE BOMB
               </h1>
               <span className="font-mono text-xs px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-500/40 font-bold">
-                SERIE: {seed}
+                {seed}
               </span>
             </div>
             <p className="font-mono text-[11px] text-slate-400">
-              SIMULADOR DE ARQUITECTURA DE SOFTWARE & DEDUCCIÓN DETERMINISTA
+              TERMINAL EDITION // SECUENCIA DETERMINISTA DE 6 MÓDULOS
             </p>
           </div>
         </div>
 
         {/* Botones de Control Principal */}
         <div className="flex items-center flex-wrap gap-2">
-          {/* Botón Ver Manual */}
+          {/* Botón Ver Manual con Bloqueo de Administrador */}
           <button
             id="btn-open-manual"
-            onClick={() => onOpenManual('blackbox')}
-            className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/40 font-mono text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer hover:shadow-[0_0_12px_rgba(0,229,255,0.3)] active:scale-95"
+            onClick={handleManualClick}
+            className={`px-3 py-1.5 rounded-lg font-mono text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 border ${
+              isAdminUnlocked
+                ? 'bg-emerald-950/90 hover:bg-emerald-900 text-[#00ff66] border-[#00ff66]/70 glow-green'
+                : 'bg-slate-900/90 text-slate-500 border-red-900/50 hover:border-red-600 hover:text-red-300'
+            }`}
+            title={
+              isAdminUnlocked
+                ? 'Manual desbloqueado (Acceso Root)'
+                : "Bloqueado para Administrador. Escriba 'sudo -admin' en la terminal."
+            }
           >
-            <BookOpen className="w-4 h-4 text-cyan-400" />
+            {isAdminUnlocked ? (
+              <Unlock className="w-4 h-4 text-[#00ff66]" />
+            ) : (
+              <Lock className="w-4 h-4 text-red-500" />
+            )}
             <span>Manual de Desactivación</span>
-          </button>
-
-          {/* Botón Algoritmo Creador */}
-          <button
-            id="btn-creator-guide"
-            onClick={() => onOpenManual('creator')}
-            className="px-3 py-1.5 rounded-lg bg-emerald-950/90 hover:bg-emerald-900 text-[#00ff66] border border-[#00ff66]/50 font-mono text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer glow-green active:scale-95"
-          >
-            <Zap className="w-4 h-4" />
-            <span>Guía Creador (&lt; 60s)</span>
+            {!isAdminUnlocked && (
+              <span className="text-[10px] bg-red-950 text-red-400 px-1.5 py-0.2 rounded border border-red-800">
+                LOCKED
+              </span>
+            )}
           </button>
 
           {/* Botón Reiniciar Bomba */}
@@ -138,21 +159,7 @@ export const Header: React.FC<HeaderProps> = ({
             className="px-3 py-1.5 rounded-lg bg-red-950/70 hover:bg-red-900 text-red-300 border border-red-600/60 font-mono text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer hover:glow-red active:scale-95"
           >
             <RotateCcw className="w-4 h-4" />
-            <span>Reiniciar Bomba</span>
-          </button>
-
-          {/* Toggle Terminal / Consola */}
-          <button
-            id="btn-toggle-terminal"
-            onClick={onToggleTerminal}
-            className={`p-2 rounded-lg border font-mono text-xs transition-colors cursor-pointer ${
-              showTerminal
-                ? 'bg-cyan-950 text-cyan-300 border-cyan-500'
-                : 'bg-slate-800 hover:bg-slate-700 text-slate-400 border-slate-700'
-            }`}
-            title="Consola de eventos del sistema"
-          >
-            <Terminal className="w-4 h-4" />
+            <span>Reiniciar</span>
           </button>
 
           {/* Toggle Silenciar Audio */}
@@ -184,7 +191,7 @@ export const Header: React.FC<HeaderProps> = ({
               <span
                 id="bomb-timer-display"
                 className={`font-mono text-2xl md:text-3xl font-black tracking-widest ${
-                  status === 'PANIC' || remainingSeconds < 120
+                  status === 'PANIC' || (remainingSeconds > 0 && remainingSeconds < 120)
                     ? 'text-red-500 text-glow-red animate-pulse'
                     : 'text-red-400 text-glow-red'
                 }`}
@@ -194,7 +201,7 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
 
-          {/* LEDs de Strikes (O O O) */}
+          {/* LEDs de Strikes (X X X) */}
           <div className="flex items-center gap-3">
             <span className="font-mono text-xs text-slate-400 font-bold">STRIKES:</span>
             <div className="flex items-center gap-2 bg-black/80 px-3 py-1.5 rounded border border-slate-800">
@@ -225,7 +232,7 @@ export const Header: React.FC<HeaderProps> = ({
             </span>
             <div
               className={`font-mono text-xs font-bold px-2.5 py-1 rounded border ${
-                speedMultiplier > 1.5
+                speedMultiplier >= 3.0
                   ? 'bg-red-950 text-red-400 border-red-500 glow-red animate-pulse'
                   : speedMultiplier > 1.0
                   ? 'bg-amber-950 text-amber-400 border-amber-500 glow-amber'

@@ -4,7 +4,7 @@ import type { BombContext } from '../../core/BombContext';
 /**
  * Patrón de Comportamiento: STATE
  * Interfaz que encapsula los comportamientos dependientes del estado interno de la bomba.
- * Permite que BombContext cambie su comportamiento cuando su estado interno cambia.
+ * Permite que BombContext cambie su comportamiento y reglas de temporizador dinámicamente.
  */
 export interface IBombState {
   readonly name: BombStatus;
@@ -26,9 +26,4 @@ export interface IBombState {
    * Manejo de cada tick de temporizador
    */
   handleTick(context: BombContext): void;
-
-  /**
-   * Manejo de clic en el Botón de Fases (Módulo 1)
-   */
-  handlePhaseButtonClick(context: BombContext, currentSeconds: number): boolean;
 }

@@ -13,6 +13,8 @@ export abstract class ModuleDecorator extends BaseModule {
   constructor(module: BaseModule) {
     super();
     this.wrappedModule = module;
+    this.isUnlocked = module.getIsUnlocked();
+    this.isSolved = module.getSolved();
   }
 
   public get id(): ModuleId {
@@ -31,6 +33,15 @@ export abstract class ModuleDecorator extends BaseModule {
     return this.wrappedModule.getSolved();
   }
 
+  public getIsUnlocked(): boolean {
+    return this.wrappedModule.getIsUnlocked();
+  }
+
+  public setUnlocked(unlocked: boolean): void {
+    super.setUnlocked(unlocked);
+    this.wrappedModule.setUnlocked(unlocked);
+  }
+
   public setContext(context: BombContext): void {
     super.setContext(context);
     this.wrappedModule.setContext(context);
@@ -38,10 +49,14 @@ export abstract class ModuleDecorator extends BaseModule {
 
   public update(event: BombEvent): void {
     this.wrappedModule.update(event);
+    this.isUnlocked = this.wrappedModule.getIsUnlocked();
+    this.isSolved = this.wrappedModule.getSolved();
   }
 
   public reset(): void {
     this.wrappedModule.reset();
+    this.isUnlocked = this.wrappedModule.getIsUnlocked();
+    this.isSolved = this.wrappedModule.getSolved();
   }
 
   public getWrapped(): BaseModule {

@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import confetti from 'canvas-confetti';
-import { Award, RotateCcw, BookOpen, CheckCircle } from 'lucide-react';
+import { Award, RotateCcw, Home } from 'lucide-react';
 
 interface VictoryModalProps {
   isOpen: boolean;
   onReset: () => void;
-  onOpenManual: (tab: 'architecture') => void;
+  onGoHome: () => void;
   remainingSeconds: number;
   strikes: number;
 }
@@ -13,7 +13,7 @@ interface VictoryModalProps {
 export const VictoryModal: React.FC<VictoryModalProps> = ({
   isOpen,
   onReset,
-  onOpenManual,
+  onGoHome,
   remainingSeconds,
   strikes,
 }) => {
@@ -89,11 +89,11 @@ export const VictoryModal: React.FC<VictoryModalProps> = ({
             Reiniciar Simulación
           </button>
           <button
-            onClick={() => onOpenManual('architecture')}
+            onClick={onGoHome}
             className="flex-1 py-2.5 px-4 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/40 font-mono text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-2"
           >
-            <BookOpen className="w-4 h-4" />
-            Ver Arquitectura UML
+            <Home className="w-4 h-4" />
+            Volver al Inicio
           </button>
         </div>
       </div>

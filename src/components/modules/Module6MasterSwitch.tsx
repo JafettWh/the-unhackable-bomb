@@ -1,32 +1,32 @@
 import React from 'react';
+import { Power, ShieldAlert, ShieldCheck, Lock, Unlock, AlertTriangle } from 'lucide-react';
 import { MasterSwitchModule } from '../../modules/MasterSwitchModule';
 import { soundManager } from '../../core/SoundManager';
-import { ShieldAlert, ShieldCheck, Power, Lock, Unlock } from 'lucide-react';
 
 interface Module6Props {
   module: MasterSwitchModule;
   onAction: () => void;
 }
 
-export const Module6MasterSwitch: React.FC<Module6Props> = ({
-  module,
-  onAction,
-}) => {
+export const Module6MasterSwitch: React.FC<Module6Props> = ({ module, onAction }) => {
   const isSolved = module.getSolved();
   const isCoverOpen = module.getCoverOpen();
-  const isSwitchEngaged = module.getSwitchEngaged();
+  const isEngaged = module.getSwitchEngaged();
+  const isOverrideAuthorized = module.getIsOverrideAuthorized();
   const prereqsMet = module.arePrerequisitesMet();
 
   const handleToggleCover = () => {
     if (isSolved) return;
     soundManager.playClick();
-    module.toggleCover();
+    const open = module.toggleCover();
+    if (!open && !isOverrideAuthorized) {
+      soundManager.playStrike();
+    }
     onAction();
   };
 
   const handleFlipSwitch = () => {
     if (isSolved) return;
-    soundManager.playClick();
     const success = module.flipMasterSwitch();
     if (success) {
       soundManager.playDefusedVictory();
@@ -37,108 +37,91 @@ export const Module6MasterSwitch: React.FC<Module6Props> = ({
   };
 
   return (
-    <div className="w-full flex flex-col items-center justify-center gap-3 py-1">
-      {/* Indicador de subsistemas previos */}
-      <div className="flex items-center gap-2 bg-slate-900/90 px-3 py-1 rounded border border-slate-700 font-mono text-xs">
-        {prereqsMet ? (
-          <span className="flex items-center gap-1.5 text-[#00ff66] font-bold">
-            <ShieldCheck className="w-3.5 h-3.5" />
-            SUBSISTEMAS 1-5 LISTOS PARA APAGADO
-          </span>
-        ) : (
-          <span className="flex items-center gap-1.5 text-amber-400">
-            <ShieldAlert className="w-3.5 h-3.5 animate-pulse" />
-            NÚCLEO ENERGIZADO: RESUELVA MÓDULOS 1 AL 5
-          </span>
-        )}
-      </div>
-
-      {/* Ensamblaje del Interruptor Maestro */}
-      <div className="relative w-44 h-40 bg-slate-950 border-4 border-slate-800 rounded-xl p-3 flex flex-col items-center justify-between shadow-2xl overflow-hidden">
-        {/* Rayas industriales de peligro amarillas y negras en el fondo */}
-        <div className="absolute inset-0 opacity-15 bg-[repeating-linear-gradient(45deg,#000,#000_10px,#ffaa00_10px,#ffaa00_20px)] pointer-events-none" />
-
-        {/* LED de estado de armado */}
-        <div className="z-10 w-full flex items-center justify-between px-2 pt-1 border-b border-slate-800 pb-1">
-          <span className="text-[9px] font-mono font-bold text-slate-400">CORE KILL</span>
-          <div className="flex items-center gap-1">
-            <div
-              className={`w-2.5 h-2.5 rounded-full ${
-                isSolved
-                  ? 'bg-[#00ff66] glow-green'
-                  : prereqsMet
-                  ? 'bg-amber-400 animate-ping'
-                  : 'bg-red-600'
-              }`}
-            />
-            <span className="text-[9px] font-mono font-bold text-slate-300">
-              {isSolved ? 'OFF' : prereqsMet ? 'ARMED' : 'LOCKED'}
-            </span>
-          </div>
+    <div className="w-full flex flex-col items-center justify-center gap-3">
+      {/* Insignias de Estado de Prerrequisitos y Autorización */}
+      <div className="flex flex-wrap items-center justify-center gap-2 w-full text-[10px] font-mono">
+        <div
+          className={`flex items-center gap-1 px-2.5 py-1 rounded border ${
+            prereqsMet
+              ? 'bg-emerald-950/80 text-[#00ff66] border-[#00ff66]/50'
+              : 'bg-slate-900 text-slate-500 border-slate-800'
+          }`}
+        >
+          {prereqsMet ? <ShieldCheck className="w-3.5 h-3.5" /> : <ShieldAlert className="w-3.5 h-3.5" />}
+          <span>ETAPAS 01-05: {prereqsMet ? 'RESUELTAS' : 'PENDIENTES'}</span>
         </div>
 
-        {/* Palanca Basculante Heavy-Duty */}
-        <div className="z-10 flex-1 flex flex-col items-center justify-center py-2">
+        <div
+          className={`flex items-center gap-1 px-2.5 py-1 rounded border ${
+            isOverrideAuthorized
+              ? 'bg-emerald-950/80 text-[#00ff66] border-[#00ff66]/50'
+              : 'bg-red-950/60 text-red-400 border-red-500/40'
+          }`}
+        >
+          {isOverrideAuthorized ? <Unlock className="w-3.5 h-3.5" /> : <Lock className="w-3.5 h-3.5" />}
+          <span>ROOT OVERRIDE: {isOverrideAuthorized ? 'AUTORIZADO' : 'BLOQUEADO'}</span>
+        </div>
+      </div>
+
+      {/* Chasis del Interruptor Maestro */}
+      <div className="relative p-5 rounded-xl bg-gradient-to-b from-slate-900 to-black border-2 border-amber-500/40 shadow-[0_0_25px_rgba(255,170,0,0.15)] flex flex-col items-center justify-center">
+        {/* Cubierta de Seguridad Acrílica */}
+        <div className="relative mb-3">
           <button
-            id="master-switch-lever"
-            disabled={!isCoverOpen || isSolved}
-            onClick={handleFlipSwitch}
-            className={`w-14 h-20 rounded-lg border-2 flex flex-col items-center justify-between p-2 transition-all duration-300 active:scale-95 cursor-pointer shadow-xl ${
-              isSwitchEngaged || isSolved
-                ? 'bg-emerald-900 border-[#00ff66] text-[#00ff66] glow-green translate-y-1'
-                : !isCoverOpen
-                ? 'bg-slate-900/60 border-slate-700 text-slate-600 opacity-60 cursor-not-allowed'
-                : prereqsMet
-                ? 'bg-gradient-to-t from-red-700 to-red-500 border-red-300 text-white shadow-[0_0_20px_rgba(255,0,51,0.6)] animate-pulse'
-                : 'bg-slate-800 border-slate-600 text-slate-400 hover:border-red-500'
+            id="btn-toggle-cover"
+            onClick={handleToggleCover}
+            disabled={isSolved}
+            className={`px-3 py-1 rounded font-mono text-[10px] font-bold uppercase transition-all cursor-pointer border ${
+              isCoverOpen
+                ? 'bg-amber-950 text-amber-300 border-amber-500 glow-amber'
+                : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-600'
             }`}
           >
-            <Power className="w-5 h-5" />
-            <div className="w-8 h-1.5 rounded-full bg-slate-300/40" />
-            <span className="text-[10px] font-display font-black">
-              {isSolved ? 'SAFE' : 'KILL'}
-            </span>
+            {isCoverOpen ? 'CUBIERTA LEVANTADA (PELIGRO)' : 'LEVANTAR CUBIERTA DE SEGURIDAD'}
           </button>
         </div>
 
-        {/* Tapa Cibernética de Protección Abatible */}
-        <div
-          onClick={handleToggleCover}
-          className={`absolute inset-x-2 bottom-2 top-8 rounded-lg border-2 transition-all duration-500 cursor-pointer flex flex-col items-center justify-center p-3 select-none backdrop-blur-sm z-20 ${
-            isCoverOpen
-              ? '-translate-y-28 opacity-20 pointer-events-auto bg-amber-500/20 border-amber-500/40'
-              : 'translate-y-0 opacity-100 bg-amber-950/90 border-amber-500/80 shadow-[0_0_20px_rgba(255,170,0,0.3)]'
-          }`}
-        >
-          {!isCoverOpen && (
-            <div className="flex flex-col items-center text-center gap-1">
-              <Lock className="w-6 h-6 text-amber-400 animate-pulse" />
-              <span className="font-display font-bold text-xs text-amber-300 tracking-wider">
-                CUBIERTA DE SEGURIDAD
-              </span>
-              <span className="font-mono text-[9px] text-amber-200/80 bg-black/50 px-2 py-0.5 rounded">
-                [ CLIC PARA LEVANTAR ]
-              </span>
+        {/* Palanca / Botón de Conmutación Definitiva */}
+        <div className="relative">
+          {/* Advertencia si la cubierta está cerrada */}
+          {!isCoverOpen && !isSolved && (
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-[1px] rounded-full z-10 flex items-center justify-center pointer-events-none">
+              <Lock className="w-6 h-6 text-amber-500/70" />
             </div>
           )}
+
+          <button
+            id="btn-master-switch-flip"
+            onClick={handleFlipSwitch}
+            disabled={!isCoverOpen || isSolved}
+            className={`w-28 h-28 rounded-full border-4 flex flex-col items-center justify-center transition-all duration-300 active:scale-95 cursor-pointer shadow-2xl ${
+              isSolved
+                ? 'bg-gradient-to-br from-emerald-600 to-teal-950 border-[#00ff66] text-[#00ff66] glow-green'
+                : isCoverOpen && isOverrideAuthorized && prereqsMet
+                ? 'bg-gradient-to-br from-red-600 via-amber-700 to-amber-950 border-red-500 text-white shadow-[0_0_35px_rgba(255,0,51,0.6)] animate-pulse hover:scale-105'
+                : 'bg-slate-900 border-slate-700 text-slate-500'
+            }`}
+          >
+            <Power className={`w-9 h-9 mb-1 ${isSolved ? 'text-[#00ff66]' : 'text-amber-400'}`} />
+            <span className="font-display font-black text-[11px] tracking-wider text-center px-1">
+              {isSolved ? 'DESACTIVADO' : 'CORTE TOTAL'}
+            </span>
+            <span className="text-[9px] font-mono opacity-80">
+              {isSolved ? 'SISTEMA SEGURO' : 'APAGADO MASTER'}
+            </span>
+          </button>
         </div>
       </div>
 
-      <div className="text-center font-mono text-[11px] text-slate-400">
+      <p className="text-[10px] text-slate-400 font-mono text-center">
         {isSolved ? (
-          <span className="text-[#00ff66] font-semibold">
-            ✓ NÚCLEO DESCONECTADO // AMENAZA NEUTRALIZADA
-          </span>
+          <span className="text-[#00ff66] font-bold">✓ Bomba Desarmada Exitosamente</span>
+        ) : !isOverrideAuthorized ? (
+          <span>Desbloqueo en terminal: <code className="text-cyan-300 font-bold">sudo override</code></span>
         ) : (
-          <span className="text-slate-400">
-            {isCoverOpen ? (
-              <span className="text-cyan-300 font-bold">Cubierta abierta: Active la palanca final</span>
-            ) : (
-              'Levante la cubierta protectora para acceder a la palanca'
-            )}
-          </span>
+          <span className="text-amber-300 font-bold animate-pulse">¡Anulación autorizada! Levante cubierta y accione corte.</span>
         )}
-      </div>
+      </p>
     </div>
   );
 };

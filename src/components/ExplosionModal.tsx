@@ -1,10 +1,10 @@
 import React from 'react';
-import { Skull, RotateCcw, HelpCircle, AlertOctagon } from 'lucide-react';
+import { Skull, RotateCcw, Home, AlertOctagon } from 'lucide-react';
 
 interface ExplosionModalProps {
   isOpen: boolean;
   onReset: () => void;
-  onOpenManual: (tab: 'creator') => void;
+  onGoHome: () => void;
   strikes: number;
   remainingSeconds: number;
 }
@@ -12,7 +12,7 @@ interface ExplosionModalProps {
 export const ExplosionModal: React.FC<ExplosionModalProps> = ({
   isOpen,
   onReset,
-  onOpenManual,
+  onGoHome,
   strikes,
   remainingSeconds,
 }) => {
@@ -61,11 +61,11 @@ export const ExplosionModal: React.FC<ExplosionModalProps> = ({
             Reintentar Misión
           </button>
           <button
-            onClick={() => onOpenManual('creator')}
+            onClick={onGoHome}
             className="flex-1 py-2.5 px-4 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 font-mono text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-2"
           >
-            <HelpCircle className="w-4 h-4 text-cyan-400" />
-            Consultar Guía del Creador
+            <Home className="w-4 h-4 text-cyan-400" />
+            Volver al Inicio
           </button>
         </div>
       </div>
