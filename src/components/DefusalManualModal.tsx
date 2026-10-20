@@ -118,9 +118,9 @@ export const DefusalManualModal: React.FC<ManualModalProps> = ({
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="p-4 rounded-lg bg-slate-900/90 border border-slate-800">
-                  <h4 className="text-cyan-400 font-bold mb-1 font-display">MÓDULO 1: ORIENTACIÓN ESPACIAL</h4>
+                  <h4 className="text-cyan-400 font-bold mb-1 font-display">MÓDULO 1: MATRIZ LÓGICA</h4>
                   <p className="text-slate-300 text-xs">
-                    Presenta cinco polígonos sin indicar sus lados. Usa la pista astronómica de la terminal para deducir qué dos figuras suman 900° en ángulos interiores.
+                    Presenta una matriz de relaciones numéricas. Usa el análisis de terminal para identificar la regla de cada fila y calcular el valor ausente.
                   </p>
                 </div>
 
@@ -148,7 +148,7 @@ export const DefusalManualModal: React.FC<ManualModalProps> = ({
                 <div className="p-4 rounded-lg bg-slate-900/90 border border-slate-800">
                   <h4 className="text-cyan-400 font-bold mb-1 font-display">MÓDULO 5: CÁLCULO FÍSICO</h4>
                   <p className="text-slate-300 text-xs">
-                    Oscilador de frecuencia regulable (0 a 100 Hz). Requiere ajustar la resonancia al valor matemáticamente derivado de una propiedad de los números primos.
+                    Oscilador con controles de frecuencia y fase. Requiere calcular el quinto armónico de 13 Hz y alinear la fase de un ciclo.
                   </p>
                 </div>
 
@@ -181,10 +181,10 @@ export const DefusalManualModal: React.FC<ManualModalProps> = ({
                     1
                   </span>
                   <div>
-                    <h5 className="font-bold text-white text-xs">Módulo 1: Orientación Espacial</h5>
+                    <h5 className="font-bold text-white text-xs">Módulo 1: Matriz Lógica</h5>
                     <p className="text-slate-400 text-xs mt-0.5">
-                      La pista pide dos polígonos con suma de ángulos interiores de 900°. Triángulo (180°) + hexágono (720°) = 900°.<br />
-                      <strong>Acción:</strong> Presionar <strong className="text-[#00ff66]">△ Triángulo</strong> y luego <strong className="text-[#00ff66]">⬡ Hexágono</strong>. Desbloquea el Módulo 2.
+                      Cada fila suma los cuadrados de sus dos primeros valores: 2² + 3² = 13; 4² + 5² = 41.<br />
+                      <strong>Acción:</strong> Calcular el valor faltante de la tercera fila. Desbloquea el Módulo 2.
                     </p>
                   </div>
                 </div>
@@ -235,8 +235,8 @@ export const DefusalManualModal: React.FC<ManualModalProps> = ({
                   <div>
                     <h5 className="font-bold text-white text-xs">Módulo 5: Cálculo Físico</h5>
                     <p className="text-slate-400 text-xs mt-0.5">
-                      Primer número primo de 2 dígitos: 11. Multiplicado por 2 = <strong>22 Hz</strong>.<br />
-                      <strong>Acción:</strong> Ajustar la frecuencia a <strong className="text-[#00ff66]">22 Hz</strong> y pulsar "Sintonizar". Desbloquea el Módulo 6.
+                      Frecuencia fundamental: 13 Hz. Quinto armónico: 5 × 13 = <strong>65 Hz</strong>. Fase: 360° ÷ 5 = <strong>72°</strong>.<br />
+                      <strong>Acción:</strong> Ajustar frecuencia a <strong className="text-[#00ff66]">65 Hz</strong> y fase a <strong className="text-[#00ff66]">72°</strong>. Desbloquea el Módulo 6.
                     </p>
                   </div>
                 </div>

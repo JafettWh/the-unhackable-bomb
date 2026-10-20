@@ -51,12 +51,11 @@ function runTerminalEditionTestSuite() {
   console.assert(cmdSpatial.isStrike === false, 'Comando scan --spatial no debe generar strike');
   console.log('✓ Terminal scan --spatial verificado:', cmdSpatial.output);
 
-  // 3. Resolver Módulo 1 (Secuencia angular: Triángulo -> Hexágono)
-  console.assert(mod1.pressShape('TRIANGLE') === true, 'Paso 1: Triángulo debe ser aceptado');
-  console.assert(mod1.pressShape('HEXAGON') === true, 'Paso 2: Hexágono debe ser aceptado');
+  // 3. Resolver Módulo 1 (Matriz: 6² + 7² = 85)
+  console.assert(mod1.submitAnswer(85) === true, 'Módulo 1 debe aceptar resultado 85');
   console.assert(mod1.getSolved() === true, 'Módulo 1 debe estar resuelto');
   console.assert(mod2.getIsUnlocked() === true, 'Observer: Módulo 2 debe desbloquearse al resolver Módulo 1');
-  console.log('✓ Módulo 1 resuelto exitosamente: [TRIANGLE, HEXAGON] &rarr; Módulo 2 DESBLOQUEADO vía Observer');
+  console.log('✓ Módulo 1 resuelto exitosamente: [85] &rarr; Módulo 2 DESBLOQUEADO vía Observer');
 
   // 4. Probar Terminal decode --seq y resolver Módulo 2 (Matemática: 8)
   const cmdSeq = bomb.executeTerminalCommand('decode --seq');
@@ -93,11 +92,12 @@ function runTerminalEditionTestSuite() {
   const cmdMath = bomb.executeTerminalCommand('calc --math');
   console.assert(cmdMath.isStrike === false, 'Comando calc --math no debe generar strike');
   console.assert(bomb.getStrikes() === 0, 'La ruta de comandos y módulos correctos debe conservar cero strikes');
-  mod5.setFrequency(22);
-  console.assert(mod5.confirmTuning() === true, 'Módulo 5 debe aceptar 22 Hz');
+  mod5.setFrequency(65);
+  mod5.setPhase(72);
+  console.assert(mod5.confirmTuning() === true, 'Módulo 5 debe aceptar 65 Hz y 72°');
   console.assert(mod5.getSolved() === true, 'Módulo 5 debe estar resuelto');
   console.assert(mod6.arePrerequisitesMet() === true, 'Módulo 6: Prerrequisitos 1-5 deben estar cumplidos');
-  console.log('✓ Módulo 5 resuelto exitosamente: [22 Hz] &rarr; Módulo 6 prerrequisitos cumplidos');
+  console.log('✓ Módulo 5 resuelto exitosamente: [65 Hz / 72°] &rarr; Módulo 6 prerrequisitos cumplidos');
 
   // 8. Desbloqueo de Administrador (Admin Lock: sudo -admin)
   const cmdAdmin = bomb.executeTerminalCommand('sudo -admin');

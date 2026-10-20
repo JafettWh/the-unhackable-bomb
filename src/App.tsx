@@ -117,8 +117,8 @@ export function App() {
               <ModuleWrapper
                 id="module-wrapper-1"
                 moduleNumber="01"
-                title="ORIENTACIÓN ESPACIAL"
-                subtitle="SECUENCIA DE ÁNGULOS POLIGONALES"
+                title="MATRIZ LÓGICA"
+                subtitle="ANÁLISIS VISUAL DE PATRONES"
                 isSolved={module1.getSolved()}
                 isLocked={!module1.getIsUnlocked()}
                 isActive={module1.getIsUnlocked() && !module1.getSolved()}

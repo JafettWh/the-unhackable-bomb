@@ -423,13 +423,13 @@ export class BombContext implements IBombSubject {
     }
 
     const commandHints: Record<string, string> = {
-      'scan --spatial': 'Suma ángulos interiores: (n - 2) x 180°. Encuentra dos polígonos cuya suma sea 900°.',
+      'scan --spatial': 'En cada fila, eleva al cuadrado los dos primeros valores y suma los resultados.',
       'decode --seq': 'Completa Fibonacci hasta el octavo término: 1, 1, 2, 3, 5, 8, 13, [ ? ].',
       'query --trivia oxygen': 'Elemento: gas esencial para la respiración y que favorece la combustión. Determina su Z.',
       'query --trivia iron': 'Elemento: metal de símbolo Fe, usado en estructuras y herramientas. Determina su Z.',
       'query --trivia': 'Pistas elementales:\n1. Gas esencial para la respiración y que favorece la combustión.\n2. Metal de símbolo Fe, usado en estructuras y herramientas.\nDetermina el número atómico Z de ambos.',
       'analyze --geometry': 'Suma los ángulos interiores de tres polígonos regulares. Para cada uno: (n - 2) x 180°. Objetivo: 1800°.',
-      'calc --math': 'La frecuencia de resonancia es el doble del primer número primo de dos dígitos.',
+      'calc --math': 'El resonador tiene frecuencia fundamental de 13 Hz. Usa el quinto armónico (f = 5 x 13) y alinea la fase en 360° / 5.',
     };
 
     if (commandHints[input]) {

@@ -12,11 +12,7 @@ export class StandardStrategy implements IDefusalStrategy {
   public readonly description: string =
     'Modo de protección perimetral activo. Las lógicas de resolución requieren validación deductiva.';
 
-  public verifySpatialStep(_currentStep: number, _shape: GeometricShape): boolean {
-    return false;
-  }
-
-  public verifySpatialSequence(_sequence: GeometricShape[]): boolean {
+  public verifySpatialAnswer(_answer: number): boolean {
     return false;
   }
 
@@ -40,7 +36,7 @@ export class StandardStrategy implements IDefusalStrategy {
     return false;
   }
 
-  public verifyPhysicalCalculation(_frequencyHz: number): boolean {
+  public verifyPhysicalCalculation(_frequencyHz: number, _phaseDegrees: number): boolean {
     return false;
   }
 

@@ -12,6 +12,7 @@ export const Module5PhysicalCalculation: React.FC<Module5Props> = ({ module, onA
   const isSolved = module.getSolved();
   const isUnlocked = module.getIsUnlocked();
   const currentHz = module.getFrequency();
+  const currentPhase = module.getPhase();
 
   const handleAdjustHz = (delta: number) => {
     if (isSolved || !isUnlocked) return;
@@ -23,6 +24,12 @@ export const Module5PhysicalCalculation: React.FC<Module5Props> = ({ module, onA
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (isSolved || !isUnlocked) return;
     module.setFrequency(Number(e.target.value));
+    onAction();
+  };
+
+  const handlePhaseChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (isSolved || !isUnlocked) return;
+    module.setPhase(Number(e.target.value));
     onAction();
   };
 
@@ -113,6 +120,23 @@ export const Module5PhysicalCalculation: React.FC<Module5Props> = ({ module, onA
         </div>
       </div>
 
+      <div className="w-full space-y-1.5">
+        <div className="flex justify-between text-[10px] font-mono text-slate-400">
+          <label htmlFor="phase-range-slider">FASE</label>
+          <span className="text-cyan-300">{currentPhase}°</span>
+        </div>
+        <input
+          id="phase-range-slider"
+          type="range"
+          min={module.minPhase}
+          max={module.maxPhase}
+          value={currentPhase}
+          onChange={handlePhaseChange}
+          disabled={isSolved || !isUnlocked}
+          className="w-full accent-amber-400 cursor-pointer disabled:opacity-40"
+        />
+      </div>
+
       {/* Botón de Sintonización */}
       <button
         id="btn-tune-frequency"
@@ -125,7 +149,7 @@ export const Module5PhysicalCalculation: React.FC<Module5Props> = ({ module, onA
         }`}
       >
         <Zap className="w-3.5 h-3.5" />
-        <span>{isSolved ? 'RESONANCIA CALIBRADA (22 Hz)' : 'SINTONIZAR RESONANCIA'}</span>
+        <span>{isSolved ? 'RESONANCIA CALIBRADA (65 Hz / 72°)' : 'SINTONIZAR RESONANCIA'}</span>
       </button>
 
       {isSolved && <p className="text-[10px] text-[#00ff66] font-mono text-center font-bold">✓ Resonancia calibrada</p>}

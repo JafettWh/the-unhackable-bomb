@@ -1,7 +1,6 @@
-import React from 'react';
-import { Compass } from 'lucide-react';
+import React, { useState } from 'react';
+import { Binary, Check } from 'lucide-react';
 import { SpatialOrientationModule } from '../../modules/SpatialOrientationModule';
-import { GeometricShape } from '../../types';
 import { soundManager } from '../../core/SoundManager';
 
 interface Module1Props {
@@ -10,79 +9,66 @@ interface Module1Props {
 }
 
 export const Module1SpatialOrientation: React.FC<Module1Props> = ({ module, onAction }) => {
+  const [answer, setAnswer] = useState('');
   const isSolved = module.getSolved();
   const isUnlocked = module.getIsUnlocked();
-  const currentStep = module.getCurrentStep();
 
-  const handlePress = (shape: GeometricShape) => {
-    if (isSolved || !isUnlocked) return;
-    const success = module.pressShape(shape);
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (isSolved || !isUnlocked || !answer) return;
+
+    const success = module.submitAnswer(Number(answer));
     if (success) {
-      if (module.getSolved()) {
-        soundManager.playSuccess();
-      } else {
-        soundManager.playClick();
-      }
+      soundManager.playSuccess();
     } else {
       soundManager.playStrike();
+      setAnswer('');
     }
     onAction();
   };
 
-  const shapes: Array<{ id: GeometricShape; symbol: string; name: string }> = [
-    { id: 'TRIANGLE', symbol: '△', name: 'Triángulo' },
-    { id: 'SQUARE', symbol: '□', name: 'Cuadrado' },
-    { id: 'PENTAGON', symbol: '⬠', name: 'Pentágono' },
-    { id: 'HEXAGON', symbol: '⬡', name: 'Hexágono' },
-    { id: 'OCTAGON', symbol: '⯄', name: 'Octágono' },
-  ];
-
   return (
-    <div className="w-full flex flex-col items-center justify-center gap-3">
-      {/* Indicador de secuencia poligonal */}
-      <div className="flex items-center gap-2 bg-black/60 px-3 py-1 rounded border border-cyan-500/30 text-[11px] font-mono">
-        <Compass className="w-3.5 h-3.5 text-cyan-400 animate-spin-slow" />
-        <span className="text-slate-400">PASOS:</span>
-        <div className="flex items-center gap-1.5 font-bold">
-          <span
-            className={`px-2 py-0.5 rounded ${
-              currentStep >= 1
-                ? 'bg-emerald-950 text-[#00ff66] border border-[#00ff66]/50'
-                : 'bg-slate-900 text-slate-500 border border-slate-800'
-            }`}
-          >
-            {currentStep >= 1 ? '△' : '—'}
-          </span>
-          <span className="text-slate-600">→</span>
-          <span
-            className={`px-2 py-0.5 rounded ${
-              isSolved
-                ? 'bg-emerald-950 text-[#00ff66] border border-[#00ff66]/50'
-                : 'bg-slate-900 text-slate-500 border border-slate-800'
-            }`}
-          >
-              {isSolved ? '⬡' : '—'}
-          </span>
-        </div>
+    <div className="w-full flex flex-col items-center justify-center gap-3 font-mono">
+      <div className="flex items-center gap-2 text-[10px] text-cyan-300">
+        <Binary className="w-4 h-4" />
+        <span>MATRIZ DE RELACIONES // VALOR AUSENTE</span>
       </div>
 
-      <div className="grid grid-cols-3 gap-2 w-full max-w-[220px]">
-        {shapes.map((shape) => (
-          <button
-            key={shape.id}
-            id={`btn-spatial-${shape.id.toLowerCase()}`}
-            onClick={() => handlePress(shape.id)}
-            disabled={isSolved || !isUnlocked}
-            title={shape.name}
-            className="min-h-14 flex flex-col items-center justify-center gap-1 rounded bg-slate-900 hover:bg-slate-800 active:bg-cyan-950 border border-slate-700 hover:border-cyan-500 text-cyan-200 font-mono transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-md active:scale-95"
+      <div className="grid grid-cols-3 gap-1.5 w-full max-w-[210px]" aria-label="Matriz numérica">
+        {['2', '3', '13', '4', '5', '41', '6', '7', '?'].map((value, index) => (
+          <div
+            key={`${index}-${value}`}
+            className={`aspect-square flex items-center justify-center border text-sm font-black ${
+              value === '?'
+                ? 'bg-cyan-950/70 border-cyan-400 text-cyan-200 text-lg'
+                : 'bg-black/70 border-slate-700 text-slate-200'
+            }`}
           >
-            <span className="text-xl leading-none">{shape.symbol}</span>
-            <span className="text-[9px] text-slate-400">{shape.name}</span>
-          </button>
+            {isSolved && value === '?' ? module.targetValue : value}
+          </div>
         ))}
       </div>
 
-      {isSolved && <p className="text-[10px] text-[#00ff66] font-mono text-center font-bold">✓ Orientación Espacial Validada</p>}
+      <form onSubmit={handleSubmit} className="flex items-center gap-2 w-full max-w-[210px]">
+        <input
+          aria-label="Resultado de la matriz"
+          type="number"
+          value={answer}
+          onChange={(event) => setAnswer(event.target.value)}
+          disabled={isSolved || !isUnlocked}
+          className="min-w-0 flex-1 bg-slate-950 border border-slate-700 rounded px-2 py-1.5 text-center text-cyan-200 focus:border-cyan-400 focus:outline-none disabled:opacity-50"
+        />
+        <button
+          type="submit"
+          disabled={isSolved || !isUnlocked || !answer}
+          aria-label="Validar resultado"
+          className="p-2 rounded bg-cyan-950 hover:bg-cyan-900 border border-cyan-500/60 text-cyan-200 disabled:opacity-40"
+        >
+          {isSolved ? <Check className="w-4 h-4 text-emerald-400" /> : <span className="text-xs font-bold">OK</span>}
+        </button>
+      </form>
+
+      {isSolved && <p className="text-[10px] text-[#00ff66] text-center font-bold">✓ MATRIZ ESTABILIZADA</p>}
     </div>
   );
 };

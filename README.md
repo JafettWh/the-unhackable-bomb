@@ -36,11 +36,11 @@ Proyecto de simulación interactiva para la asignatura **Arquitectura de Softwar
 
 ## Módulos
 
-1. Resuelve la pista angular del módulo espacial con dos polígonos cuya suma sea 900°.
+1. Completa la matriz visual; cada fila suma los cuadrados de sus dos primeros valores.
 2. Completa Fibonacci: `1, 1, 2, 3, 5, 8, 13, ?`.
 3. Usa `query --trivia` para obtener las pistas de oxígeno e hierro y sus números atómicos.
 4. Usa `analyze --geometry` para la pista de ángulos interiores y selecciona tres polígonos.
-5. Usa `calc --math` para la pista de resonancia.
+5. Usa `calc --math`; ajusta el quinto armónico a 65 Hz y su fase a 72°.
 6. Ejecuta `sudo override` y responde `1945`, el año del fin de la Segunda Guerra Mundial.
 
 Los comandos de análisis no generan strikes; los comandos desconocidos y las respuestas incorrectas sí.

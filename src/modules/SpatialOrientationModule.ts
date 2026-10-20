@@ -1,21 +1,19 @@
 import { BaseModule } from './BaseModule';
-import { ModuleId, BombEvent, GeometricShape } from '../types';
+import { ModuleId, BombEvent } from '../types';
 
 /**
- * MÓDULO 1: Orientación Espacial (State)
- * UI: Selección de polígonos sin indicar sus lados.
- * Comando Terminal: scan --spatial -> pista sobre la suma de ángulos interiores.
- * Resolución: TRIANGLE seguido de HEXAGON.
+ * MÓDULO 1: Matriz Lógica (State)
+ * UI: Análisis de una matriz numérica con una regla visual por fila.
+ * Comando Terminal: scan --spatial -> pista sobre cuadrados y suma.
+ * Resolución: 6² + 7² = 85.
  * Al resolver, activa visual y lógicamente el Módulo 2 mediante el patrón Observer.
  */
 export class SpatialOrientationModule extends BaseModule {
   public readonly id: ModuleId = 'module_1';
-  public readonly title: string = 'MÓDULO 01 // ORIENTACIÓN ESPACIAL';
-  public readonly subtitle: string = 'SECUENCIA DE ÁNGULOS POLIGONALES';
+  public readonly title: string = 'MÓDULO 01 // MATRIZ LÓGICA';
+  public readonly subtitle: string = 'ANÁLISIS VISUAL DE PATRONES';
 
-  public readonly targetSequence: GeometricShape[] = ['TRIANGLE', 'HEXAGON'];
-  private currentStepIndex: number = 0;
-  private inputHistory: GeometricShape[] = [];
+  public readonly targetValue: number = 85;
 
   constructor() {
     super();
@@ -28,45 +26,22 @@ export class SpatialOrientationModule extends BaseModule {
     }
   }
 
-  public pressShape(shape: GeometricShape): boolean {
+  public submitAnswer(answer: number): boolean {
     if (this.isSolved) return true;
     if (!this.isUnlocked) return false;
     if (!this.context || !this.context.canInteract()) return false;
 
     const strategy = this.context.getStrategy();
-    const isValidStep = strategy.verifySpatialStep(this.currentStepIndex, shape);
-
-    this.inputHistory.push(shape);
-
-    if (isValidStep) {
-      this.currentStepIndex++;
-      if (this.currentStepIndex >= this.targetSequence.length) {
-        this.markSolved();
-      }
+    if (strategy.verifySpatialAnswer(answer)) {
+      this.markSolved();
       return true;
-    } else {
-      // Reinicia la secuencia y penaliza una figura incorrecta.
-      this.currentStepIndex = 0;
-      this.inputHistory = [];
-      this.triggerStrike(
-        `Polígono '${shape}' incorrecto. Secuencia angular reiniciada.`
-      );
-      return false;
     }
-  }
-
-  public getCurrentStep(): number {
-    return this.currentStepIndex;
-  }
-
-  public getInputHistory(): GeometricShape[] {
-    return [...this.inputHistory];
+    this.triggerStrike(`Resultado ${answer} incorrecto. La matriz sigue sin estabilizar.`);
+    return false;
   }
 
   public reset(): void {
     this.isSolved = false;
     this.isUnlocked = true;
-    this.currentStepIndex = 0;
-    this.inputHistory = [];
   }
 }

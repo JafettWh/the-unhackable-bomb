@@ -14,8 +14,7 @@ export interface IDefusalStrategy {
    * Módulo 1: Orientación Espacial
   * Valida paso o secuencia completa de polígonos
    */
-  verifySpatialStep(currentStep: number, shape: GeometricShape): boolean;
-  verifySpatialSequence(sequence: GeometricShape[]): boolean;
+  verifySpatialAnswer(answer: number): boolean;
   verifyVisualRoutingStep(currentStep: number, direction: VisualDirection): boolean;
 
   /**
@@ -41,7 +40,7 @@ export interface IDefusalStrategy {
    * Módulo 5: Cálculo Físico
    * Valida frecuencia de resonancia en Hz
    */
-  verifyPhysicalCalculation(frequencyHz: number): boolean;
+  verifyPhysicalCalculation(frequencyHz: number, phaseDegrees: number): boolean;
 
   /**
    * Módulo 6: Ejecución Final
