@@ -81,18 +81,15 @@ export const Module3ScientificTrivia: React.FC<Module3Props> = ({ module, onActi
           className="flex items-center justify-center gap-1.5 w-full py-1.5 rounded bg-slate-900 hover:bg-slate-800 border border-slate-700 text-[10px] font-mono text-cyan-300 disabled:opacity-40"
         >
           <BookOpen className="w-3.5 h-3.5" />
-          {showReference ? 'OCULTAR TABLA Z' : 'CONSULTAR TABLA Z'}
+          {showReference ? 'OCULTAR CONFIGURACIÓN ELECTRÓNICA' : 'CONSULTAR CONFIGURACIÓN ELECTRÓNICA'}
         </button>
         {showReference && (
-          <div id="atomic-number-reference" className="grid grid-cols-4 gap-1.5 mt-2" aria-label="Referencia de números atómicos">
+          <div id="atomic-number-reference" className="space-y-1.5 mt-2" aria-label="Configuraciones electrónicas por elemento">
+            <p className="text-center text-[9px] font-mono text-slate-500">ÁTOMO NEUTRO: SUMA LOS ELECTRONES DE CADA CAPA PARA CALCULAR Z</p>
             {ScientificTriviaModule.AVAILABLE_ELEMENTS.map((element) => (
-              <div
-                key={element.symbol}
-                title={element.name}
-                className="min-h-12 flex flex-col items-center justify-center rounded border border-slate-700 bg-black/70 font-mono"
-              >
-                <span className="text-[9px] text-slate-500">{element.atomicNumber}</span>
+              <div key={element.symbol} title={element.name} className="grid grid-cols-[2.5rem_1fr] items-center gap-2 rounded border border-slate-700 bg-black/70 px-2 py-1 font-mono">
                 <span className="text-xs font-black text-cyan-300">{element.symbol}</span>
+                <span className="text-[10px] text-slate-300">{element.electronShells.join(' + ')}</span>
               </div>
             ))}
           </div>

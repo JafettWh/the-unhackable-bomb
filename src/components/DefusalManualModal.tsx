@@ -134,7 +134,7 @@ export const DefusalManualModal: React.FC<ManualModalProps> = ({
                 <div className="p-4 rounded-lg bg-slate-900/90 border border-slate-800">
                   <h4 className="text-cyan-400 font-bold mb-1 font-display">MÓDULO 3: CONOCIMIENTO CIENTÍFICO</h4>
                   <p className="text-slate-300 text-xs">
-                    Selector de elementos de la tabla periódica y dial Z. Requiere identificar dos elementos a partir de pistas y fijar sus números atómicos.
+                    Selector de elementos, dial Z y referencia opcional de electrones por capa. Identifica dos elementos y suma sus electrones para calcular Z en cada átomo neutro.
                   </p>
                 </div>
 

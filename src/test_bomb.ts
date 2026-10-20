@@ -74,6 +74,10 @@ function runTerminalEditionTestSuite() {
   console.assert(bomb.getStatus() === 'NORMAL', 'Tras iniciar conexión, el estado debe ser NORMAL');
   console.assert(bomb.getSpeedMultiplier() === 1.0, 'Velocidad operativa debe ser 1.0x');
   console.assert(bomb.getStrikes() === 0, 'Strikes iniciales deben ser 0');
+  console.assert(
+    ScientificTriviaModule.AVAILABLE_ELEMENTS.every((element) => element.electronShells.reduce((sum, shell) => sum + shell, 0) === element.atomicNumber),
+    'La referencia por capas debe permitir calcular correctamente Z para cada elemento'
+  );
   console.log('✓ Conexión establecida: Temporizador 15:00 iniciado en NormalState (1.0x)');
 
   // Obtener módulos

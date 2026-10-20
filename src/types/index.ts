@@ -34,6 +34,10 @@ export interface ChemicalElement {
   atomicNumber: number;
 }
 
+export interface PeriodicElement extends ChemicalElement {
+  electronShells: number[];
+}
+
 export type BombEventType =
   | 'TICK'
   | 'STRIKE'

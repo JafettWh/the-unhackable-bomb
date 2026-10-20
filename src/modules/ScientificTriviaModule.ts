@@ -1,5 +1,5 @@
 import { BaseModule } from './BaseModule';
-import { ModuleId, BombEvent, ChemicalElement } from '../types';
+import { ModuleId, BombEvent, ChemicalElement, PeriodicElement } from '../types';
 import { ScienceChallenge } from './ChallengeVariants';
 
 /**
@@ -14,15 +14,15 @@ export class ScientificTriviaModule extends BaseModule {
   public readonly title: string = 'MÓDULO 03 // CONOCIMIENTO CIENTÍFICO';
   public readonly subtitle: string = 'ESTABILIZACIÓN ELEMENTAL Y NÚMERO ATÓMICO';
 
-  public static readonly AVAILABLE_ELEMENTS: ChemicalElement[] = [
-    { symbol: 'H', name: 'Hidrógeno', atomicNumber: 1 },
-    { symbol: 'He', name: 'Helio', atomicNumber: 2 },
-    { symbol: 'C', name: 'Carbono', atomicNumber: 6 },
-    { symbol: 'N', name: 'Nitrógeno', atomicNumber: 7 },
-    { symbol: 'O', name: 'Oxígeno', atomicNumber: 8 },
-    { symbol: 'Na', name: 'Sodio', atomicNumber: 11 },
-    { symbol: 'Fe', name: 'Hierro', atomicNumber: 26 },
-    { symbol: 'Au', name: 'Oro', atomicNumber: 79 },
+  public static readonly AVAILABLE_ELEMENTS: PeriodicElement[] = [
+    { symbol: 'H', name: 'Hidrógeno', atomicNumber: 1, electronShells: [1] },
+    { symbol: 'He', name: 'Helio', atomicNumber: 2, electronShells: [2] },
+    { symbol: 'C', name: 'Carbono', atomicNumber: 6, electronShells: [2, 4] },
+    { symbol: 'N', name: 'Nitrógeno', atomicNumber: 7, electronShells: [2, 5] },
+    { symbol: 'O', name: 'Oxígeno', atomicNumber: 8, electronShells: [2, 6] },
+    { symbol: 'Na', name: 'Sodio', atomicNumber: 11, electronShells: [2, 8, 1] },
+    { symbol: 'Fe', name: 'Hierro', atomicNumber: 26, electronShells: [2, 8, 14, 2] },
+    { symbol: 'Au', name: 'Oro', atomicNumber: 79, electronShells: [2, 8, 18, 32, 18, 1] },
   ];
 
   private selectedElement: string = 'H';
