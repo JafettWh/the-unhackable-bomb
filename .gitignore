@@ -11,7 +11,39 @@ node_modules
 dist
 dist-ssr
 *.local
-package-lock.json
+
+# Local environment and package credentials
+.env
+.env.*
+!.env.example
+!.env.*.example
+.npmrc
+!.npmrc.example
+
+# Firebase local state, debug output, and service-account credentials
+.firebase/
+firebase-debug.log*
+firestore-debug.log*
+ui-debug.log*
+*serviceAccount*.json
+*service-account*.json
+*firebase-adminsdk*.json
+*google-credentials*.json
+GoogleService-Info.plist
+google-services.json
+
+# Private keys, certificates, and local secret directories
+*.pem
+*.key
+*.p8
+*.p12
+*.pfx
+*.ppk
+*.jks
+*.keystore
+.ssh/
+secrets/
+credentials/
 
 # Editor directories and files
 .vscode/*
