@@ -73,3 +73,15 @@ npm run build
 ## GitHub Pages
 
 El repositorio está configurado para publicar desde GitHub Actions. Sube los cambios a la rama `main` y en GitHub habilita **Settings → Pages → Build and deployment → GitHub Actions**. El workflow compila con `npm ci` y publica `dist`; la URL esperada es `https://jafettwh.github.io/the-unhackable-bomb/`.
+
+## Firebase: reglas compartidas
+
+El juego lee la configuración global desde `settings/gameRules` en Cloud Firestore. Los visitantes pueden leerla; las escrituras deben quedar limitadas al UID del administrador.
+
+1. En Firebase Console, crea Cloud Firestore en modo de producción y habilita Email/Password en Authentication.
+2. Crea la cuenta admin desde Authentication y copia su UID.
+3. Reemplaza `REPLACE_WITH_ADMIN_UID` en `firestore.rules` por ese UID y publica esas reglas en **Firestore Database → Rules**.
+4. En **Authentication → Settings → Authorized domains**, agrega `jafettwh.github.io`.
+5. Inicia sesión en el panel admin de la página y guarda las reglas. Firestore creará el documento `settings/gameRules`; las visitas posteriores lo cargarán antes de iniciar la partida.
+
+La configuración web de Firebase vive en `src/core/firebase.ts`. Esos valores identifican el proyecto, no sustituyen las reglas de seguridad. No subas claves de cuentas de servicio al repositorio.

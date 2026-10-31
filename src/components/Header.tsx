@@ -126,17 +126,15 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Botones de Control Principal */}
         <div className="flex items-center flex-wrap gap-2">
-          {isAdminUnlocked && (
-            <button
-              aria-label="Abrir panel de administración"
-              className="p-2 rounded-lg border border-emerald-500/60 bg-emerald-950/60 text-emerald-300 transition-colors hover:bg-emerald-900"
-              onClick={onOpenAdminPanel}
-              title="Panel de administración"
-              type="button"
-            >
-              <Shield className="w-4 h-4" />
-            </button>
-          )}
+          <button
+            aria-label="Abrir panel de administración"
+            className="p-2 rounded-lg border border-emerald-500/60 bg-emerald-950/60 text-emerald-300 transition-colors hover:bg-emerald-900"
+            onClick={onOpenAdminPanel}
+            title="Panel de administración"
+            type="button"
+          >
+            <Shield className="w-4 h-4" />
+          </button>
           {/* Botón Ver Manual con Bloqueo de Administrador */}
           <button
             id="btn-open-manual"

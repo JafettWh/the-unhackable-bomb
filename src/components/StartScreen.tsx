@@ -8,6 +8,8 @@ interface StartScreenProps {
   seed: string;
   initialTimeSeconds: number;
   maxStrikes: number;
+  isConfigLoading: boolean;
+  cloudRulesUnavailable: boolean;
 }
 
 export const StartScreen: React.FC<StartScreenProps> = ({
@@ -16,8 +18,11 @@ export const StartScreen: React.FC<StartScreenProps> = ({
   seed,
   initialTimeSeconds,
   maxStrikes,
+  isConfigLoading,
+  cloudRulesUnavailable,
 }) => {
   const handleStart = () => {
+    if (isConfigLoading) return;
     soundManager.playSuccess();
     onStartConnection();
   };
@@ -125,6 +130,12 @@ export const StartScreen: React.FC<StartScreenProps> = ({
           </p>
         </div>
 
+        {cloudRulesUnavailable && (
+          <p className="mb-6 max-w-2xl border-l-2 border-amber-500 px-3 py-2 text-left text-xs text-amber-200" role="status">
+            No se pudieron cargar las reglas compartidas. Se usarán los valores predeterminados de esta sesión.
+          </p>
+        )}
+
         {/* Botón Gigante de INICIAR CONEXIÓN */}
         <div className="relative group">
           <div className="absolute -inset-4 bg-gradient-to-r from-emerald-500 via-cyan-500 to-teal-500 rounded-2xl blur-xl opacity-75 group-hover:opacity-100 transition duration-500 group-hover:duration-200 animate-pulse" />
@@ -132,10 +143,11 @@ export const StartScreen: React.FC<StartScreenProps> = ({
           <button
             id="btn-start-connection"
             onClick={handleStart}
-            className="relative px-10 py-5 sm:px-14 sm:py-6 rounded-xl bg-gradient-to-b from-[#0b1720] to-[#04080e] border-2 border-[#00ff66] text-[#00ff66] font-display font-black text-lg sm:text-2xl tracking-widest uppercase transition-all duration-300 group-hover:scale-105 active:scale-95 cursor-pointer glow-green shadow-[0_0_40px_rgba(0,255,102,0.6)] flex items-center gap-4"
+            disabled={isConfigLoading}
+            className="relative px-10 py-5 sm:px-14 sm:py-6 rounded-xl bg-gradient-to-b from-[#0b1720] to-[#04080e] border-2 border-[#00ff66] text-[#00ff66] font-display font-black text-lg sm:text-2xl tracking-widest uppercase transition-all duration-300 group-hover:scale-105 active:scale-95 cursor-pointer glow-green shadow-[0_0_40px_rgba(0,255,102,0.6)] flex items-center gap-4 disabled:cursor-wait disabled:opacity-60"
           >
             <Play className="w-6 h-6 sm:w-8 sm:h-8 fill-current text-[#00ff66] animate-bounce" />
-            <span>INICIAR CONEXIÓN</span>
+            <span>{isConfigLoading ? 'CARGANDO REGLAS' : 'INICIAR CONEXIÓN'}</span>
             <Zap className="w-6 h-6 sm:w-8 sm:h-8 text-cyan-400" />
           </button>
         </div>

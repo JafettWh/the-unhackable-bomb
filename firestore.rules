@@ -1,0 +1,51 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.uid == '8ysURp2Fqnf3YwdIQWKKTOOZe063';
+    }
+
+    function hasValidGameRules() {
+      let data = request.resource.data;
+      return data.keys().hasAll([
+          'initialTimeSeconds',
+          'maxStrikes',
+          'strikePenalties',
+          'criticalTimeThresholdSeconds',
+          'criticalTimeSpeedMultiplier'
+        ])
+        && data.keys().hasOnly([
+          'initialTimeSeconds',
+          'maxStrikes',
+          'strikePenalties',
+          'criticalTimeThresholdSeconds',
+          'criticalTimeSpeedMultiplier'
+        ])
+        && data.initialTimeSeconds is int
+        && data.initialTimeSeconds >= 60
+        && data.initialTimeSeconds <= 3600
+        && data.maxStrikes is int
+        && data.maxStrikes >= 1
+        && data.maxStrikes <= 10
+        && data.strikePenalties is list
+        && data.strikePenalties.size() == data.maxStrikes
+        && data.criticalTimeThresholdSeconds is int
+        && data.criticalTimeThresholdSeconds >= 0
+        && data.criticalTimeThresholdSeconds <= data.initialTimeSeconds
+        && data.criticalTimeSpeedMultiplier is number
+        && data.criticalTimeSpeedMultiplier >= 0.1
+        && data.criticalTimeSpeedMultiplier <= 5;
+    }
+
+    match /settings/gameRules {
+      allow read: if true;
+      allow create, update: if isAdmin() && hasValidGameRules();
+      allow delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

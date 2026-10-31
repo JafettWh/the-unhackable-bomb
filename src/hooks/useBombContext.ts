@@ -3,6 +3,18 @@ import { BombContext, BombRules } from '../core/BombContext';
 import { BaseModule } from '../modules/BaseModule';
 import { BombStatus, StrategyType } from '../types';
 
+function rulesAreEqual(left: BombRules, right: BombRules): boolean {
+  return left.initialTimeSeconds === right.initialTimeSeconds
+    && left.maxStrikes === right.maxStrikes
+    && left.criticalTimeThresholdSeconds === right.criticalTimeThresholdSeconds
+    && left.criticalTimeSpeedMultiplier === right.criticalTimeSpeedMultiplier
+    && left.strikePenalties.length === right.strikePenalties.length
+    && left.strikePenalties.every((penalty, index) =>
+      penalty.timePenaltySeconds === right.strikePenalties[index]?.timePenaltySeconds
+      && penalty.speedMultiplier === right.strikePenalties[index]?.speedMultiplier
+    );
+}
+
 export function useBombContext() {
   const bombRef = useRef<BombContext | null>(null);
 
@@ -36,7 +48,10 @@ export function useBombContext() {
       setLogs(bomb.getLogs());
       setIsAdminUnlocked(bomb.getIsAdminUnlocked());
       setIsOverrideUnlocked(bomb.getIsOverrideUnlocked());
-      setRules(bomb.getRules());
+      const currentRules = bomb.getRules();
+      setRules((previousRules) =>
+        rulesAreEqual(previousRules, currentRules) ? previousRules : currentRules
+      );
       setTickCounter((prev) => prev + 1);
     });
 

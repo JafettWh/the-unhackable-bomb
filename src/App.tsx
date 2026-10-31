@@ -23,6 +23,14 @@ import { PhysicalCalculationModule } from './modules/PhysicalCalculationModule';
 import { MasterSwitchModule } from './modules/MasterSwitchModule';
 import { ModuleFactory } from './patterns/factory/ModuleFactory';
 import { AlertTriangle, ShieldCheck } from 'lucide-react';
+import {
+  firebaseAuth,
+  loadSharedBombRules,
+  loginFirebaseUser,
+  logoutFirebaseUser,
+  observeFirebaseUser,
+  saveSharedBombRules,
+} from './core/firebase';
 
 export function App() {
   const {
@@ -43,13 +51,43 @@ export function App() {
   const [manualModalOpen, setManualModalOpen] = useState(false);
   const [manualInitialTab, setManualInitialTab] = useState<'blackbox' | 'creator'>('blackbox');
   const [adminPanelOpen, setAdminPanelOpen] = useState(false);
+  const [isFirebaseAuthenticated, setIsFirebaseAuthenticated] = useState(false);
+  const [areCloudRulesLoaded, setAreCloudRulesLoaded] = useState(false);
+  const [cloudRulesUnavailable, setCloudRulesUnavailable] = useState(false);
 
   useEffect(() => {
-    if (isAdminUnlocked) setAdminPanelOpen(true);
-  }, [isAdminUnlocked]);
+    let isMounted = true;
+    const unsubscribeAuth = observeFirebaseUser(firebaseAuth, (user) => {
+      if (isMounted) setIsFirebaseAuthenticated(Boolean(user));
+    });
 
-  const authenticateAdmin = (password: string) => bomb.authenticateAdmin(password);
-  const saveRules = (nextRules: typeof rules) => bomb.configureRules(nextRules);
+    loadSharedBombRules()
+      .then((sharedRules) => {
+        if (isMounted && sharedRules) bomb.configureRules(sharedRules);
+      })
+      .catch((error: unknown) => {
+        if (isMounted) setCloudRulesUnavailable(true);
+        console.error('No se pudieron cargar las reglas compartidas de Firestore:', error);
+      })
+      .finally(() => {
+        if (isMounted) setAreCloudRulesLoaded(true);
+      });
+
+    return () => {
+      isMounted = false;
+      unsubscribeAuth();
+    };
+  }, [bomb]);
+
+  const authenticateAdmin = async (email: string, password: string) => {
+    await loginFirebaseUser(firebaseAuth, email, password);
+  };
+  const signOutAdmin = async () => logoutFirebaseUser(firebaseAuth);
+  const saveRules = async (nextRules: typeof rules) => {
+    await saveSharedBombRules(nextRules);
+    bomb.configureRules(nextRules);
+    setCloudRulesUnavailable(false);
+  };
 
   // Si el estado es STANDBY, mostrar exclusivamente la Pantalla de Inicio (ocultando la bomba)
   if (status === 'STANDBY') {
@@ -61,13 +99,16 @@ export function App() {
           seed={ModuleFactory.SEED}
           initialTimeSeconds={rules.initialTimeSeconds}
           maxStrikes={rules.maxStrikes}
+          isConfigLoading={!areCloudRulesLoaded}
+          cloudRulesUnavailable={cloudRulesUnavailable}
         />
         <AdminPanelModal
           isOpen={adminPanelOpen}
-          isAdminUnlocked={isAdminUnlocked}
+          isAuthenticated={isFirebaseAuthenticated}
           rules={rules}
           onClose={() => setAdminPanelOpen(false)}
           onAuthenticate={authenticateAdmin}
+          onSignOut={signOutAdmin}
           onSave={saveRules}
         />
       </>
@@ -288,10 +329,11 @@ export function App() {
 
       <AdminPanelModal
         isOpen={adminPanelOpen}
-        isAdminUnlocked={isAdminUnlocked}
+        isAuthenticated={isFirebaseAuthenticated}
         rules={rules}
         onClose={() => setAdminPanelOpen(false)}
         onAuthenticate={authenticateAdmin}
+        onSignOut={signOutAdmin}
         onSave={saveRules}
       />
     </div>

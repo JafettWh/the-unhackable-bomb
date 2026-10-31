@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { AlertTriangle, Gauge, KeyRound, Save, ShieldCheck, X } from 'lucide-react';
+import { AlertTriangle, Gauge, KeyRound, LogOut, Mail, Save, ShieldCheck, X } from 'lucide-react';
 import { BombRules, StrikePenalty } from '../core/BombContext';
 
 interface AdminPanelModalProps {
   isOpen: boolean;
-  isAdminUnlocked: boolean;
+  isAuthenticated: boolean;
   rules: BombRules;
   onClose: () => void;
-  onAuthenticate: (password: string) => boolean;
-  onSave: (rules: BombRules) => void;
+  onAuthenticate: (email: string, password: string) => Promise<void>;
+  onSignOut: () => Promise<void>;
+  onSave: (rules: BombRules) => Promise<void>;
 }
 
 const defaultPenalty = (strikeNumber: number): StrikePenalty => ({
@@ -18,16 +19,20 @@ const defaultPenalty = (strikeNumber: number): StrikePenalty => ({
 
 export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
   isOpen,
-  isAdminUnlocked,
+  isAuthenticated,
   rules,
   onClose,
   onAuthenticate,
+  onSignOut,
   onSave,
 }) => {
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [authError, setAuthError] = useState('');
   const [draft, setDraft] = useState<BombRules>(rules);
   const [saved, setSaved] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [saveError, setSaveError] = useState('');
 
   useEffect(() => {
     setDraft(rules);
@@ -35,15 +40,18 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
 
   if (!isOpen) return null;
 
-  const handleAuthenticate = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleAuthenticate = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!onAuthenticate(password)) {
-      setAuthError('Credenciales no válidas. Acceso denegado.');
+    setIsSubmitting(true);
+    try {
+      await onAuthenticate(email, password);
+      setAuthError('');
+    } catch {
+      setAuthError('No se pudo iniciar sesión. Revisa las credenciales y que Firebase Authentication esté habilitado.');
+    } finally {
       setPassword('');
-      return;
+      setIsSubmitting(false);
     }
-    setAuthError('');
-    setPassword('');
   };
 
   const handleMaxStrikesChange = (value: number) => {
@@ -68,10 +76,19 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
     setSaved(false);
   };
 
-  const handleSave = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSave = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    onSave(draft);
-    setSaved(true);
+    setIsSubmitting(true);
+    setSaveError('');
+    try {
+      await onSave(draft);
+      setSaved(true);
+    } catch {
+      setSaved(false);
+      setSaveError('No se guardaron las reglas. Verifica Firestore y el UID autorizado en firestore.rules.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -97,44 +114,75 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
               <p className="mt-1 text-[10px] text-slate-400">CONFIGURACIÓN DE PARTIDA // ROOT</p>
             </div>
           </div>
-          <button
-            aria-label="Cerrar panel"
-            className="rounded border border-slate-700 p-2 text-slate-400 transition hover:border-slate-500 hover:text-white"
-            onClick={onClose}
-            title="Cerrar"
-            type="button"
-          >
-            <X className="h-4 w-4" />
-          </button>
+          <div className="flex items-center gap-2">
+            {isAuthenticated && (
+              <button
+                aria-label="Cerrar sesión de administrador"
+                className="rounded border border-slate-700 p-2 text-slate-400 transition hover:border-red-500/60 hover:text-red-300"
+                onClick={() => void onSignOut()}
+                title="Cerrar sesión"
+                type="button"
+              >
+                <LogOut className="h-4 w-4" />
+              </button>
+            )}
+            <button
+              aria-label="Cerrar panel"
+              className="rounded border border-slate-700 p-2 text-slate-400 transition hover:border-slate-500 hover:text-white"
+              onClick={onClose}
+              title="Cerrar"
+              type="button"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
         </header>
 
-        {!isAdminUnlocked ? (
+        {!isAuthenticated ? (
           <form className="space-y-4 p-6" onSubmit={handleAuthenticate}>
             <p className="text-xs leading-relaxed text-slate-300">
-              Introduce las credenciales de administrador para modificar las reglas de la bomba.
+              Inicia sesión con la cuenta admin de Firebase para modificar las reglas compartidas.
             </p>
+            <label className="block text-[11px] font-bold text-slate-400" htmlFor="admin-email">
+              CORREO ADMIN
+            </label>
+            <div className="flex items-center gap-2 rounded border border-slate-700 bg-black/70 px-3 focus-within:border-emerald-500">
+              <Mail className="h-4 w-4 shrink-0 text-emerald-400" />
+              <input
+                autoComplete="username"
+                autoFocus
+                className="min-w-0 flex-1 bg-transparent py-2 text-sm text-white outline-none"
+                id="admin-email"
+                onChange={(event) => setEmail(event.target.value)}
+                placeholder="admin@correo.com"
+                required
+                type="email"
+                value={email}
+              />
+            </div>
             <label className="block text-[11px] font-bold text-slate-400" htmlFor="admin-password">
-              CONTRASEÑA ADMIN
+              CONTRASEÑA
             </label>
             <div className="flex gap-2">
               <div className="flex min-w-0 flex-1 items-center gap-2 rounded border border-slate-700 bg-black/70 px-3 focus-within:border-emerald-500">
                 <KeyRound className="h-4 w-4 shrink-0 text-emerald-400" />
                 <input
                   autoComplete="current-password"
-                  autoFocus
                   className="min-w-0 flex-1 bg-transparent py-2 text-sm text-white outline-none"
                   id="admin-password"
                   onChange={(event) => setPassword(event.target.value)}
                   placeholder="Contraseña"
+                  required
                   type="password"
                   value={password}
                 />
               </div>
               <button
-                className="rounded border border-emerald-500/70 bg-emerald-950/70 px-4 text-xs font-bold text-emerald-300 transition hover:bg-emerald-900"
+                className="rounded border border-emerald-500/70 bg-emerald-950/70 px-4 text-xs font-bold text-emerald-300 transition hover:bg-emerald-900 disabled:cursor-wait disabled:opacity-50"
+                disabled={isSubmitting}
                 type="submit"
               >
-                AUTENTICAR
+                {isSubmitting ? 'CONECTANDO...' : 'INICIAR SESIÓN'}
               </button>
             </div>
             {authError && <p className="text-xs text-red-400" role="alert">{authError}</p>}
@@ -263,7 +311,8 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
               <span aria-live="polite" className="text-[10px] text-emerald-300">
                 {saved ? 'REGLAS GUARDADAS' : 'CAMBIOS PENDIENTES'}
               </span>
-              <button className="flex items-center gap-2 rounded border border-emerald-500/70 bg-emerald-950/70 px-4 py-2 text-xs font-bold text-emerald-300 transition hover:bg-emerald-900" type="submit">
+              {saveError && <p className="mr-auto text-[10px] text-red-300" role="alert">{saveError}</p>}
+              <button className="flex items-center gap-2 rounded border border-emerald-500/70 bg-emerald-950/70 px-4 py-2 text-xs font-bold text-emerald-300 transition hover:bg-emerald-900 disabled:cursor-wait disabled:opacity-50" disabled={isSubmitting} type="submit">
                 <Save className="h-4 w-4" /> GUARDAR REGLAS
               </button>
             </footer>
