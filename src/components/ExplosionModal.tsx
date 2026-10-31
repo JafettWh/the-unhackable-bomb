@@ -24,8 +24,14 @@ export const ExplosionModal: React.FC<ExplosionModalProps> = ({
       : 'Agotamiento total del tiempo límite (00:00).';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-red-950/85 backdrop-blur-md animate-fadeIn">
-      <div className="relative w-full max-w-lg bg-[#140608] border-2 border-red-600 rounded-2xl p-6 shadow-[0_0_80px_rgba(255,0,51,0.6)] flex flex-col items-center text-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden p-4 bg-red-950/85 backdrop-blur-md animate-fadeIn explosion-screen">
+      <div className="explosion-scene" aria-hidden="true">
+        <span className="explosion-ring explosion-ring-one" />
+        <span className="explosion-ring explosion-ring-two" />
+        <span className="explosion-core" />
+        <span className="explosion-sparks">✦</span>
+      </div>
+      <div className="relative z-10 my-auto w-full max-w-lg max-h-[calc(100dvh-2rem)] overflow-y-auto bg-[#140608] border-2 border-red-600 rounded-2xl p-6 shadow-[0_0_80px_rgba(255,0,51,0.6)] flex flex-col items-center text-center">
         {/* Insignia de Detonación */}
         <div className="w-16 h-16 rounded-full bg-red-950 border-2 border-red-500 flex items-center justify-center mb-4 glow-red animate-pulse">
           <Skull className="w-9 h-9 text-red-500" />

@@ -1,6 +1,6 @@
 import { BaseModule } from './BaseModule';
 import { ModuleId, BombEvent, GeometricShape } from '../types';
-import { GeometryChallenge } from './ChallengeVariants';
+import { GeometryChallenge, isValidGeometricPrefix } from './ChallengeVariants';
 
 /**
  * MÓDULO 4: Cifrado Geométrico (Decorator)
@@ -16,14 +16,13 @@ export class GeometricCipherModule extends BaseModule {
   public readonly subtitle: string = 'DEDUCCIÓN ESPACIAL — ÁNGULOS INTERIORES';
 
   public readonly targetInteriorAngleSum: number;
-  public readonly targetSequence: GeometricShape[];
+  public readonly targetSequenceLength: number = 3;
   private currentStepIndex: number = 0;
   private pressedShapes: GeometricShape[] = [];
 
   constructor(challenge: GeometryChallenge) {
     super();
     this.targetInteriorAngleSum = challenge.targetAngleSum;
-    this.targetSequence = challenge.sequence;
     this.isUnlocked = false; // Bloqueado hasta resolver Módulo 3
   }
 
@@ -41,13 +40,15 @@ export class GeometricCipherModule extends BaseModule {
     if (!this.context || !this.context.canInteract()) return false;
 
     const strategy = this.context.getStrategy();
-    const isValid = strategy.verifyGeometricStep(this.currentStepIndex, shape);
-
-    this.pressedShapes.push(shape);
+    const candidateSequence = [...this.pressedShapes, shape];
+    const isValid = isValidGeometricPrefix(candidateSequence, this.targetInteriorAngleSum)
+      && (candidateSequence.length < this.targetSequenceLength
+        || strategy.verifyGeometricSequence(candidateSequence));
 
     if (isValid) {
+      this.pressedShapes = candidateSequence;
       this.currentStepIndex++;
-      if (this.currentStepIndex >= this.targetSequence.length) {
+      if (this.currentStepIndex >= this.targetSequenceLength) {
         this.markSolved();
       }
       return true;

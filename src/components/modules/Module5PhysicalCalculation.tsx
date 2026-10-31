@@ -33,6 +33,13 @@ export const Module5PhysicalCalculation: React.FC<Module5Props> = ({ module, onA
     onAction();
   };
 
+  const handleAdjustPhase = (delta: number) => {
+    if (isSolved || !isUnlocked) return;
+    soundManager.playClick();
+    module.adjustPhase(delta);
+    onAction();
+  };
+
   const handleConfirm = () => {
     if (isSolved || !isUnlocked) return;
     const success = module.confirmTuning();
@@ -124,6 +131,31 @@ export const Module5PhysicalCalculation: React.FC<Module5Props> = ({ module, onA
         <div className="flex justify-between text-[10px] font-mono text-slate-400">
           <label htmlFor="phase-range-slider">FASE</label>
           <span className="text-cyan-300">{currentPhase}°</span>
+        </div>
+        <div className="flex items-center justify-between gap-1">
+          {[-5, -1].map((delta) => (
+            <button
+              key={delta}
+              onClick={() => handleAdjustPhase(delta)}
+              disabled={isSolved || !isUnlocked}
+              className="px-2 py-1 rounded bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs font-mono font-bold border border-slate-700 cursor-pointer disabled:opacity-40 active:scale-95"
+              aria-label={`${delta} grados de fase`}
+            >
+              {delta}
+            </button>
+          ))}
+          <span className="text-[9px] font-mono text-slate-500">AJUSTE FINO</span>
+          {[1, 5].map((delta) => (
+            <button
+              key={delta}
+              onClick={() => handleAdjustPhase(delta)}
+              disabled={isSolved || !isUnlocked}
+              className="px-2 py-1 rounded bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs font-mono font-bold border border-slate-700 cursor-pointer disabled:opacity-40 active:scale-95"
+              aria-label={`+${delta} grados de fase`}
+            >
+              +{delta}
+            </button>
+          ))}
         </div>
         <input
           id="phase-range-slider"

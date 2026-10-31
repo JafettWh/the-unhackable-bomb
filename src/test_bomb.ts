@@ -7,7 +7,12 @@ import { GlitchDecorator } from './patterns/decorator/GlitchDecorator';
 import { GeometricCipherModule } from './modules/GeometricCipherModule';
 import { PhysicalCalculationModule } from './modules/PhysicalCalculationModule';
 import { MasterSwitchModule } from './modules/MasterSwitchModule';
-import { CHALLENGE_VARIANTS } from './modules/ChallengeVariants';
+import {
+  CHALLENGE_VARIANTS,
+  getOverrideCode,
+  getInteriorAngle,
+  getValidGeometricSequences,
+} from './modules/ChallengeVariants';
 
 function verifyVariant(variantIndex: number): void {
   const variantBomb = new BombContext(ModuleFactory.SEED, false, variantIndex);
@@ -28,6 +33,39 @@ function verifyVariant(variantIndex: number): void {
   const mod4 = variantBomb.getModule<GlitchDecorator>('module_4')!.getWrapped() as GeometricCipherModule;
   const mod5 = variantBomb.getModule<PhysicalCalculationModule>('module_5')!;
   const mod6 = variantBomb.getModule<MasterSwitchModule>('module_6')!;
+  const geometricSolutions = getValidGeometricSequences(variant.geometry.targetAngleSum);
+  const geometricShapes: Array<'TRIANGLE' | 'SQUARE' | 'PENTAGON' | 'HEXAGON' | 'OCTAGON'> = [
+    'TRIANGLE',
+    'SQUARE',
+    'PENTAGON',
+    'HEXAGON',
+    'OCTAGON',
+  ];
+  for (let first = 0; first < geometricShapes.length - 2; first++) {
+    for (let second = first + 1; second < geometricShapes.length - 1; second++) {
+      for (let third = second + 1; third < geometricShapes.length; third++) {
+        const sequence = [geometricShapes[first], geometricShapes[second], geometricShapes[third]];
+        const sum = sequence.reduce((total, shape) => total + getInteriorAngle(shape), 0);
+        console.assert(
+          variantBomb.getStrategy().verifyGeometricSequence(sequence) === (sum === variant.geometry.targetAngleSum),
+          `Variante ${variantIndex + 1}: validar combinación ${sequence.join(', ')} por suma y orden`
+        );
+      }
+    }
+  }
+  console.assert(
+    geometricSolutions.length > 0,
+    `Variante ${variantIndex + 1}: debe existir al menos una combinación geométrica válida`
+  );
+  geometricSolutions.forEach((sequence) => {
+    const angles = sequence.map(getInteriorAngle);
+    console.assert(
+      angles[0] < angles[1] && angles[1] < angles[2]
+        && angles.reduce((sum, angle) => sum + angle, 0) === variant.geometry.targetAngleSum
+        && variantBomb.getStrategy().verifyGeometricSequence(sequence),
+      `Variante ${variantIndex + 1}: combinación válida de menor a mayor aceptada`
+    );
+  });
 
   variantBomb.executeTerminalCommand('scan --spatial');
   mod1.submitAnswer(variant.spatial.answer);
@@ -39,9 +77,15 @@ function verifyVariant(variantIndex: number): void {
     mod3.setElement(element.symbol);
     mod3.setDialZ(element.atomicNumber);
     mod3.confirmSubmission();
+    if (mod3.getSolvedElements() === 1) {
+      console.assert(
+        mod3.getSelectedElement() === element.symbol && mod3.getCurrentDialZ() === element.atomicNumber,
+        `Variante ${variantIndex + 1}: validar el primer elemento no debe revelar ni seleccionar el segundo`
+      );
+    }
   });
   variantBomb.executeTerminalCommand('analyze --geometry');
-  mod4.targetSequence.forEach((shape) => mod4.pressShape(shape));
+  geometricSolutions[0].forEach((shape) => mod4.pressShape(shape));
   variantBomb.executeTerminalCommand('calc --math');
   mod5.setFrequency(variant.physical.fundamentalHz * variant.physical.harmonic);
   mod5.setPhase(360 / variant.physical.harmonic);
@@ -50,9 +94,14 @@ function verifyVariant(variantIndex: number): void {
   console.assert(variantBomb.getStrikes() === 0, `Variante ${variantIndex + 1}: respuestas correctas sin strikes`);
   const overridePrompt = variantBomb.executeTerminalCommand('sudo override');
   console.assert(overridePrompt.isStrike === false, `Variante ${variantIndex + 1}: override disponible tras resolver módulos`);
-  console.assert(overridePrompt.output.includes(variant.override.clue), `Variante ${variantIndex + 1}: pista histórica correspondiente`);
-  const overrideCode = variantBomb.executeTerminalCommand(variant.override.code);
-  console.assert(overrideCode.isStrike === false && mod6.getIsOverrideAuthorized(), `Variante ${variantIndex + 1}: código correcto autorizado`);
+  console.assert(overridePrompt.output.includes('panel del Módulo 6'), `Variante ${variantIndex + 1}: terminal dirige al panel de código`);
+  console.assert(
+    overridePrompt.output.includes('con su posición') && overridePrompt.output.includes('cifra de unidades'),
+    `Variante ${variantIndex + 1}: la regla del código se revela en la terminal`
+  );
+  console.assert(!mod6.submitOverrideCode('0000') && !mod6.getIsOverrideAuthorized(), `Variante ${variantIndex + 1}: código incorrecto no autoriza el interruptor`);
+  console.assert(mod6.submitOverrideCode(getOverrideCode(variant.override)), `Variante ${variantIndex + 1}: código de colores correcto autorizado`);
+  console.assert(mod6.getIsOverrideAuthorized(), `Variante ${variantIndex + 1}: anulación autorizada en el módulo`);
   variantBomb.stopTimer();
 }
 
@@ -79,6 +128,14 @@ function runTerminalEditionTestSuite() {
     'La referencia por capas debe permitir calcular correctamente Z para cada elemento'
   );
   console.log('✓ Conexión establecida: Temporizador 15:00 iniciado en NormalState (1.0x)');
+  console.assert(
+    getValidGeometricSequences(1620).some((sequence) => sequence.join(',') === 'TRIANGLE,SQUARE,OCTAGON'),
+    'Módulo 4 debe aceptar triángulo (180°) + cuadrado (360°) + octágono (1080°) para el objetivo 1620°'
+  );
+  console.assert(
+    getOverrideCode({ colors: ['WHITE', 'WHITE', 'WHITE', 'WHITE'] }) === '9012',
+    'Módulo 6 debe conservar la cifra de unidades cuando base + posición tiene dos dígitos'
+  );
 
   // Obtener módulos
   const mod1 = bomb.getModule<SpatialOrientationModule>('module_1')!;
@@ -127,6 +184,7 @@ function runTerminalEditionTestSuite() {
   mod3.setElement('O');
   mod3.setDialZ(8);
   console.assert(mod3.confirmSubmission() === true, 'Módulo 3 debe aceptar Oxígeno con Z=8');
+  console.assert(mod3.getSelectedElement() === 'O' && mod3.getCurrentDialZ() === 8, 'Validar el primer elemento no debe preseleccionar el siguiente');
   mod3.setElement('Fe');
   mod3.setDialZ(26);
   console.assert(mod3.confirmSubmission() === true, 'Módulo 3 debe aceptar Hierro con Z=26');
@@ -137,6 +195,10 @@ function runTerminalEditionTestSuite() {
   // 6. Resolver Módulo 4 (ángulos interiores: triángulo, pentágono y octágono)
   const cmdGeometry = bomb.executeTerminalCommand('analyze --geometry');
   console.assert(cmdGeometry.isStrike === false, 'Comando analyze --geometry no debe generar strike');
+  console.assert(
+    cmdGeometry.output.includes('(L - 2) x 180°') && cmdGeometry.output.includes('Objetivo: 1800°'),
+    'Comando analyze --geometry debe mostrar la fórmula y el objetivo de la variante'
+  );
   console.assert(mod4.pressShape('TRIANGLE') === true, 'Triángulo debe ser aceptado');
   console.assert(mod4.pressShape('PENTAGON') === true, 'Pentágono debe ser aceptado');
   console.assert(mod4.pressShape('OCTAGON') === true, 'Octágono debe ser aceptado');
@@ -149,7 +211,9 @@ function runTerminalEditionTestSuite() {
   console.assert(cmdMath.isStrike === false, 'Comando calc --math no debe generar strike');
   console.assert(bomb.getStrikes() === 0, 'La ruta de comandos y módulos correctos debe conservar cero strikes');
   mod5.setFrequency(65);
-  mod5.setPhase(72);
+  mod5.setPhase(67);
+  mod5.adjustPhase(5);
+  console.assert(mod5.getPhase() === 72, 'Módulo 5 debe permitir ajustar la fase en incrementos de 5°');
   console.assert(mod5.confirmTuning() === true, 'Módulo 5 debe aceptar 65 Hz y 72°');
   console.assert(mod5.getSolved() === true, 'Módulo 5 debe estar resuelto');
   console.assert(mod6.arePrerequisitesMet() === true, 'Módulo 6: Prerrequisitos 1-5 deben estar cumplidos');
@@ -162,11 +226,10 @@ function runTerminalEditionTestSuite() {
   console.assert(bomb.getIsAdminUnlocked() === true, 'Manual de desactivación debe estar desbloqueado tras sudo -admin');
   console.log('✓ Bloqueo de Administrador verificado: comando sudo -admin desbloqueó el Manual táctico');
 
-  // 9. Resolver Módulo 6 (Ejecución Final: sudo override + Master Switch)
+  // 9. Resolver Módulo 6 (Ejecución Final: código de colores + Master Switch)
   const cmdOverride = bomb.executeTerminalCommand('sudo override');
-  console.assert(cmdOverride.success === true && cmdOverride.output.includes('Código requerido'), 'sudo override debe solicitar código');
-  const overrideCode = bomb.executeTerminalCommand('1945');
-  console.assert(overrideCode.isStrike === false, 'Código histórico correcto no debe generar strike');
+  console.assert(cmdOverride.success === true && cmdOverride.output.includes('panel del Módulo 6'), 'sudo override debe dirigir al panel del módulo');
+  console.assert(mod6.submitOverrideCode(getOverrideCode(CHALLENGE_VARIANTS[0].override)), 'Código de colores correcto no debe generar strike');
   console.assert(mod6.getIsOverrideAuthorized() === true, 'Módulo 6 debe autorizar anulación');
 
   mod6.toggleCover();

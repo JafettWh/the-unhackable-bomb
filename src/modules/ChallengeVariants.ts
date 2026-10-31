@@ -17,7 +17,6 @@ export interface ScienceChallenge {
 }
 
 export interface GeometryChallenge {
-  sequence: GeometricShape[];
   targetAngleSum: number;
 }
 
@@ -26,10 +25,39 @@ export interface PhysicalChallenge {
   harmonic: number;
 }
 
+export type OverrideColor =
+  | 'RED'
+  | 'CYAN'
+  | 'GREEN'
+  | 'LIME'
+  | 'PURPLE'
+  | 'BLUE'
+  | 'ORANGE'
+  | 'WHITE'
+  | 'PINK'
+  | 'SLATE';
+
 export interface OverrideChallenge {
-  code: string;
-  clue: string;
+  colors: [OverrideColor, OverrideColor, OverrideColor, OverrideColor];
 }
+
+export const OVERRIDE_COLOR_BASES: Record<OverrideColor, number> = {
+  RED: 1,
+  CYAN: 2,
+  GREEN: 3,
+  LIME: 4,
+  PURPLE: 5,
+  BLUE: 6,
+  ORANGE: 7,
+  WHITE: 8,
+  PINK: 9,
+  SLATE: 0,
+};
+
+export const getOverrideCode = (challenge: OverrideChallenge): string =>
+  challenge.colors
+    .map((color, index) => (OVERRIDE_COLOR_BASES[color] + index + 1) % 10)
+    .join('');
 
 export interface ChallengeVariant {
   spatial: SpatialChallenge;
@@ -51,9 +79,9 @@ export const CHALLENGE_VARIANTS: ChallengeVariant[] = [
       ],
       clues: ['Gas diatómico que ocupa cerca de una quinta parte del aire seco y permite la combustión.', 'Metal de transición cuya oxidación produce herrumbre rojiza; también participa en el transporte de gases en la sangre.'],
     },
-    geometry: { sequence: ['TRIANGLE', 'PENTAGON', 'OCTAGON'], targetAngleSum: 1800 },
+    geometry: { targetAngleSum: 1800 },
     physical: { fundamentalHz: 13, harmonic: 5 },
-    override: { code: '1945', clue: 'Año del fin de la Segunda Guerra Mundial.' },
+    override: { colors: ['RED', 'GREEN', 'BLUE', 'LIME'] },
   },
   {
     spatial: { rows: [[3, 4, 25], [5, 6, 61], [7, 8, null]], answer: 113 },
@@ -65,9 +93,9 @@ export const CHALLENGE_VARIANTS: ChallengeVariant[] = [
       ],
       clues: ['No metal tetravalente que forma el esqueleto de innumerables moléculas orgánicas.', 'Metal alcalino que cede con facilidad su electrón externo; su símbolo deriva del nombre latino natrium.'],
     },
-    geometry: { sequence: ['SQUARE', 'HEXAGON', 'OCTAGON'], targetAngleSum: 2160 },
+    geometry: { targetAngleSum: 2160 },
     physical: { fundamentalHz: 7, harmonic: 8 },
-    override: { code: '1969', clue: 'Año en que el ser humano llegó por primera vez a la Luna.' },
+    override: { colors: ['CYAN', 'PURPLE', 'ORANGE', 'WHITE'] },
   },
   {
     spatial: { rows: [[1, 2, 5], [3, 4, 25], [5, 6, null]], answer: 61 },
@@ -79,9 +107,9 @@ export const CHALLENGE_VARIANTS: ChallengeVariant[] = [
       ],
       clues: ['Gas noble del primer período: su única capa electrónica está completa.', 'Metal noble de acuñación cuyo símbolo procede de aurum.'],
     },
-    geometry: { sequence: ['TRIANGLE', 'SQUARE', 'PENTAGON'], targetAngleSum: 1080 },
+    geometry: { targetAngleSum: 1080 },
     physical: { fundamentalHz: 11, harmonic: 6 },
-    override: { code: '1989', clue: 'Año de la caída del Muro de Berlín.' },
+    override: { colors: ['PINK', 'SLATE', 'RED', 'CYAN'] },
   },
   {
     spatial: { rows: [[2, 5, 29], [3, 6, 45], [4, 7, null]], answer: 65 },
@@ -93,9 +121,9 @@ export const CHALLENGE_VARIANTS: ChallengeVariant[] = [
       ],
       clues: ['Gas diatómico que constituye aproximadamente cuatro quintas partes de la atmósfera.', 'No metal capaz de formar cuatro enlaces covalentes y construir cadenas moleculares.'],
     },
-    geometry: { sequence: ['SQUARE', 'PENTAGON', 'HEXAGON'], targetAngleSum: 1620 },
+    geometry: { targetAngleSum: 1620 },
     physical: { fundamentalHz: 17, harmonic: 4 },
-    override: { code: '1789', clue: 'Año del inicio de la Revolución Francesa.' },
+    override: { colors: ['BLUE', 'LIME', 'GREEN', 'PURPLE'] },
   },
   {
     spatial: { rows: [[1, 4, 17], [2, 5, 29], [3, 6, null]], answer: 45 },
@@ -107,9 +135,9 @@ export const CHALLENGE_VARIANTS: ChallengeVariant[] = [
       ],
       clues: ['Núcleo con un solo protón; es el elemento más abundante del universo observable.', 'Gas diatómico que compone aproximadamente una quinta parte del aire y sostiene la combustión.'],
     },
-    geometry: { sequence: ['TRIANGLE', 'HEXAGON', 'OCTAGON'], targetAngleSum: 1980 },
+    geometry: { targetAngleSum: 1980 },
     physical: { fundamentalHz: 19, harmonic: 3 },
-    override: { code: '1492', clue: 'Año del primer viaje de Colón a América.' },
+    override: { colors: ['WHITE', 'RED', 'SLATE', 'ORANGE'] },
   },
 ];
 
@@ -123,3 +151,31 @@ export const getInteriorAngle = (shape: GeometricShape): number => {
   };
   return (sides[shape] - 2) * 180;
 };
+
+export const getValidGeometricSequences = (targetAngleSum: number): GeometricShape[][] => {
+  const shapes: GeometricShape[] = ['TRIANGLE', 'SQUARE', 'PENTAGON', 'HEXAGON', 'OCTAGON'];
+  const sequences: GeometricShape[][] = [];
+
+  for (let first = 0; first < shapes.length - 2; first++) {
+    for (let second = first + 1; second < shapes.length - 1; second++) {
+      for (let third = second + 1; third < shapes.length; third++) {
+        const sequence: GeometricShape[] = [shapes[first], shapes[second], shapes[third]];
+        if (sequence.reduce((sum, shape) => sum + getInteriorAngle(shape), 0) === targetAngleSum) {
+          sequences.push(sequence);
+        }
+      }
+    }
+  }
+
+  return sequences;
+};
+
+export const isValidGeometricPrefix = (
+  sequence: GeometricShape[],
+  targetAngleSum: number
+): boolean =>
+  sequence.length > 0
+  && sequence.length <= 3
+  && getValidGeometricSequences(targetAngleSum).some((candidate) =>
+    sequence.every((shape, index) => candidate[index] === shape)
+  );

@@ -55,8 +55,8 @@ export class ModuleFactory {
     // Módulo 5: Cálculo Físico (Observer/Strategy) - Desbloqueado por M4
     const mod5 = new PhysicalCalculationModule(variant.physical);
 
-    // Módulo 6: Ejecución Final (Master Switch) - Desbloqueado por M5 + sudo override
-    const mod6 = new MasterSwitchModule();
+    // Módulo 6: Ejecución Final - código de colores + interruptor maestro
+    const mod6 = new MasterSwitchModule(variant.override);
 
     return [mod1, mod2, mod3, mod4, mod5, mod6];
   }

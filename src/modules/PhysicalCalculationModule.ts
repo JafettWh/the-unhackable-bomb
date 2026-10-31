@@ -58,6 +58,10 @@ export class PhysicalCalculationModule extends BaseModule {
     this.currentPhase = Math.max(this.minPhase, Math.min(this.maxPhase, Math.round(degrees)));
   }
 
+  public adjustPhase(delta: number): void {
+    this.setPhase(this.currentPhase + delta);
+  }
+
   public confirmTuning(): boolean {
     if (this.isSolved) return true;
     if (!this.isUnlocked) return false;

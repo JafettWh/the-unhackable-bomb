@@ -324,7 +324,7 @@ export class BombContext implements IBombSubject {
       mod6.setOverrideAuthorized(true);
     }
 
-    this.addLog('Comando sudo override aceptado. Interruptor Maestro desbloqueado físicamente.', 'success');
+    this.addLog('Código de colores validado. Interruptor Maestro desbloqueado físicamente.', 'success');
 
     this.notify({
       type: 'OVERRIDE_UNLOCKED',
@@ -346,7 +346,6 @@ export class BombContext implements IBombSubject {
    */
   // Estado interno para autenticación interactiva de sudo -admin
   private awaitingAdminPassword: boolean = false;
-  private awaitingOverrideCode: boolean = false;
 
   private areDefusalModulesSolved(): boolean {
     return this.modules
@@ -356,31 +355,6 @@ export class BombContext implements IBombSubject {
 
   public executeTerminalCommand(rawInput: string): { success: boolean; output: string; isStrike: boolean } {
     const input = rawInput.trim().toLowerCase();
-
-    if (this.awaitingOverrideCode) {
-      this.awaitingOverrideCode = false;
-      if (!this.areDefusalModulesSolved()) {
-        return {
-          success: false,
-          output: '[OVERRIDE BLOQUEADO] Resuelve primero los módulos 01–05. No se ha registrado strike.',
-          isStrike: false,
-        };
-      }
-      if (input === this.variant.override.code) {
-        this.unlockOverride();
-        return {
-          success: true,
-          output: '[ANULACIÓN DE SEGURIDAD] Código histórico verificado. Interruptor Maestro desbloqueado.',
-          isStrike: false,
-        };
-      }
-      this.addStrike(`Código de anulación incorrecto: '${input}'`);
-      return {
-        success: false,
-        output: 'ERROR: Código histórico incorrecto. Intento de anulación registrado. +1 STRIKE.',
-        isStrike: true,
-      };
-    }
 
     // Flujo de contraseña admin (primer paso: sudo -admin → solicitar password)
     if (this.awaitingAdminPassword) {
@@ -421,7 +395,7 @@ export class BombContext implements IBombSubject {
     if (input === 'analyze --geometry') {
       return {
         success: true,
-        output: `Suma los ángulos interiores de 3 polígonos regulares. Cada figura aporta (lados - 2) x 180°. Objetivo: ${this.variant.geometry.targetAngleSum}°.`,
+        output: `Módulo 4 — Cifrado Geométrico: calcula la suma de ángulos interiores de cada polígono con (L - 2) x 180°, donde L es el número de lados. Elige 3 figuras en orden ascendente de aporte y suma sus valores. Objetivo: ${this.variant.geometry.targetAngleSum}°.`,
         isStrike: false,
       };
     }
@@ -441,10 +415,9 @@ export class BombContext implements IBombSubject {
           isStrike: false,
         };
       }
-      this.awaitingOverrideCode = true;
       return {
         success: true,
-        output: `[sudo] Código requerido (4 dígitos): ${this.variant.override.clue}`,
+        output: '[ANULACIÓN DE SEGURIDAD] Para cada señal, suma su valor base con su posición (n inicia en 1). Si el resultado tiene dos cifras, conserva solo la cifra de unidades. Ingresa los cuatro dígitos en el panel del Módulo 6.',
         isStrike: false,
       };
     }
@@ -467,9 +440,9 @@ export class BombContext implements IBombSubject {
         scan --spatial    : Analiza la matriz 3x3 y deduce la regla que completa la celda ausente.
         decode --seq      : Observa los siete términos, identifica la relación recurrente e ingresa el siguiente.
         query --trivia    : Revela dos pistas indirectas; identifica los elementos y determina cada Z.
-        analyze --geometry: Calcula el ángulo interior de tres polígonos y alcanza el objetivo de esta partida.
+        analyze --geometry: Consulta la fórmula de ángulos interiores y el objetivo del Módulo 4.
         calc --math       : Combina la frecuencia fundamental, el armónico solicitado y la fase resultante.
-        sudo override     : Se habilita tras resolver 01–05; entonces solicita una fecha histórica de cuatro cifras.
+        sudo override     : Indica dónde ingresar el código de colores del Módulo 6 tras resolver 01–05.
   sudo -admin        : Autenticación root (requiere contraseña)
   status             : Diagnóstico general de módulos y telemetría
   clear              : Limpiar buffer de pantalla`,
@@ -516,7 +489,6 @@ ${modulesStatus}`,
     this.isAdminUnlocked = false;
     this.isOverrideUnlocked = false;
     this.awaitingAdminPassword = false;
-    this.awaitingOverrideCode = false;
     this.variantIndex = ModuleFactory.normalizeVariantIndex(
       variantIndex ?? ModuleFactory.randomVariantIndex(this.variantIndex)
     );

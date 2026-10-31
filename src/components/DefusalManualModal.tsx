@@ -141,21 +141,21 @@ export const DefusalManualModal: React.FC<ManualModalProps> = ({
                 <div className="p-4 rounded-lg bg-slate-900/90 border border-slate-800">
                   <h4 className="text-cyan-400 font-bold mb-1 font-display">MÓDULO 4: CIFRADO GEOMÉTRICO</h4>
                   <p className="text-slate-300 text-xs">
-                    Presenta cinco polígonos sin indicar sus lados y un objetivo angular. Seleccione tres figuras en orden cuya suma de ángulos interiores coincida con el objetivo. El decorador <em>GlitchDecorator</em> añade interferencia visual.
+                    Presenta cinco polígonos y un objetivo angular. Ejecute <code>analyze --geometry</code> en la terminal para consultar la fórmula y el objetivo. Seleccione tres figuras de menor a mayor aporte cuya suma coincida con el objetivo. Se aceptan todas las combinaciones que cumplan ambas reglas. El decorador <em>GlitchDecorator</em> añade interferencia visual.
                   </p>
                 </div>
 
                 <div className="p-4 rounded-lg bg-slate-900/90 border border-slate-800">
                   <h4 className="text-cyan-400 font-bold mb-1 font-display">MÓDULO 5: CÁLCULO FÍSICO</h4>
                   <p className="text-slate-300 text-xs">
-                    Oscilador con controles de frecuencia y fase. Calcula el armónico y la fase indicados por la consulta de terminal.
+                    Oscilador con controles de frecuencia y fase. Calcula el armónico y la fase indicados por la consulta de terminal; ajusta la fase con los botones ±1° y ±5° o el deslizador.
                   </p>
                 </div>
 
                 <div className="p-4 rounded-lg bg-slate-900/90 border border-slate-800">
                   <h4 className="text-cyan-400 font-bold mb-1 font-display">MÓDULO 6: EJECUCIÓN FINAL (MASTER SWITCH)</h4>
                   <p className="text-slate-300 text-xs">
-                    Interruptor físico protegido por cubierta de seguridad. Requiere anulación root por terminal (<code>sudo override</code>) y resolución previa de los módulos 1 al 5.
+                    Tras resolver los módulos 1–5, ingrese <code>sudo override</code> en la terminal para consultar la regla de conversión del código visual. Introduzca el resultado en el teclado del panel. Después levante la cubierta y accione el interruptor maestro.
                   </p>
                 </div>
               </div>
@@ -246,7 +246,7 @@ export const DefusalManualModal: React.FC<ManualModalProps> = ({
                   <div>
                     <h5 className="font-bold text-white text-xs">Módulo 6: Ejecución Final (Master Switch)</h5>
                     <p className="text-slate-400 text-xs mt-0.5">
-                      Tras resolver los módulos 1–5, ejecuta <code className="text-cyan-300 font-bold">sudo override</code> y responde con el código histórico indicado.<br />
+                      Tras resolver los módulos 1–5, ejecuta <code>sudo override</code> en la terminal para consultar la regla de conversión. Ingresa el resultado en el teclado del panel.<br />
                       <strong>Acción:</strong> Levantar la cubierta de seguridad y accionar el botón de <strong className="text-[#00ff66]">Corte Total</strong>. La bomba entra en <strong>DefusedState</strong> (Victoria).
                     </p>
                   </div>

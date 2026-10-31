@@ -26,6 +26,20 @@ export const VictoryModal: React.FC<VictoryModalProps> = ({
         origin: { y: 0.6 },
         colors: ['#00ff66', '#00e5ff', '#ffffff', '#ffaa00'],
       });
+      confetti({
+        particleCount: 70,
+        angle: 60,
+        spread: 65,
+        origin: { x: 0, y: 0.7 },
+        colors: ['#00ff66', '#00e5ff', '#ffffff', '#ffaa00'],
+      });
+      confetti({
+        particleCount: 70,
+        angle: 120,
+        spread: 65,
+        origin: { x: 1, y: 0.7 },
+        colors: ['#00ff66', '#00e5ff', '#ffffff', '#ffaa00'],
+      });
 
       const interval = setInterval(() => {
         confetti({

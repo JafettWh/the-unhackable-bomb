@@ -28,10 +28,6 @@ export class StandardStrategy implements IDefusalStrategy {
     return false;
   }
 
-  public verifyGeometricStep(_currentStep: number, _shape: GeometricShape): boolean {
-    return false;
-  }
-
   public verifyGeometricSequence(_sequence: GeometricShape[]): boolean {
     return false;
   }

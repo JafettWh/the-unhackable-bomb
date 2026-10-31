@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Atom, Plus, Minus, Check, BookOpen } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Atom, Check, BookOpen } from 'lucide-react';
 import { ScientificTriviaModule } from '../../modules/ScientificTriviaModule';
 import { soundManager } from '../../core/SoundManager';
 
@@ -15,6 +15,12 @@ export const Module3ScientificTrivia: React.FC<Module3Props> = ({ module, onActi
   const selectedElement = module.getSelectedElement();
   const currentDialZ = module.getCurrentDialZ();
   const solvedElements = module.getSolvedElements();
+  const [dialInput, setDialInput] = useState(String(currentDialZ));
+  const [dialError, setDialError] = useState('');
+
+  useEffect(() => {
+    setDialInput(String(currentDialZ));
+  }, [currentDialZ]);
 
   const handleSelectElement = (symbol: string) => {
     if (isSolved || !isUnlocked) return;
@@ -23,15 +29,15 @@ export const Module3ScientificTrivia: React.FC<Module3Props> = ({ module, onActi
     onAction();
   };
 
-  const handleAdjustZ = (delta: number) => {
-    if (isSolved || !isUnlocked) return;
-    soundManager.playClick();
-    module.adjustDialZ(delta);
-    onAction();
-  };
-
   const handleConfirm = () => {
     if (isSolved || !isUnlocked) return;
+    const atomicNumber = Number(dialInput);
+    if (!/^\d+$/.test(dialInput) || atomicNumber < 1 || atomicNumber > 118) {
+      setDialError('INGRESA UN NÚMERO Z ENTRE 1 Y 118.');
+      return;
+    }
+    module.setDialZ(atomicNumber);
+    setDialError('');
     const success = module.confirmSubmission();
     if (success) {
       soundManager.playSuccess();
@@ -103,35 +109,28 @@ export const Module3ScientificTrivia: React.FC<Module3Props> = ({ module, onActi
           <span>DIAL Z:</span>
           <input
             aria-label="Número atómico Z"
-            type="number"
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
             min={1}
-            max={118}
-            value={currentDialZ}
-            onChange={(event) => module.setDialZ(Number(event.target.value))}
+            maxLength={3}
+            value={dialInput}
+            onChange={(event) => {
+              const value = event.target.value;
+              if (value === '' || /^\d{1,3}$/.test(value)) {
+                setDialInput(value);
+                setDialError('');
+                if (/^\d{1,3}$/.test(value)) module.setDialZ(Number(value));
+                onAction();
+              }
+            }}
             disabled={isSolved || !isUnlocked}
             className="w-14 bg-slate-900 border border-slate-700 rounded px-1 py-0.5 text-center text-base font-black text-cyan-300"
           />
         </div>
-
-        <div className="flex items-center gap-1">
-          <button
-            onClick={() => handleAdjustZ(-1)}
-            disabled={isSolved || !isUnlocked}
-            className="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 cursor-pointer disabled:opacity-40 active:scale-90"
-            title="-1 Z"
-          >
-            <Minus className="w-3.5 h-3.5" />
-          </button>
-          <button
-            onClick={() => handleAdjustZ(1)}
-            disabled={isSolved || !isUnlocked}
-            className="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 cursor-pointer disabled:opacity-40 active:scale-90"
-            title="+1 Z"
-          >
-            <Plus className="w-3.5 h-3.5" />
-          </button>
-        </div>
+        <span className="text-[9px] font-mono text-slate-500">ESCRITURA DIRECTA</span>
       </div>
+      {dialError && <p role="alert" className="w-full text-[9px] font-mono text-amber-300 text-center">{dialError}</p>}
 
       {/* Botón de Confirmación */}
       <button

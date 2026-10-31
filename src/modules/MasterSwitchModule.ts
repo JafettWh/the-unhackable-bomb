@@ -1,13 +1,14 @@
 import { BaseModule } from './BaseModule';
 import { ModuleId, BombEvent } from '../types';
 import { DefusedState } from '../patterns/state/DefusedState';
+import { getOverrideCode, OverrideChallenge } from './ChallengeVariants';
 
 /**
  * MÓDULO 6: Ejecución Final (Master Switch)
  * UI: Interruptor Maestro bloqueado físicamente con cubierta de seguridad.
- * Comando Terminal: sudo override -> Desbloquea físicamente el interruptor en la UI.
+ * UI: descifra una secuencia de colores e ingresa el código de cuatro dígitos.
  * Resolución: Accionar el interruptor maestro finaliza el juego (DefusedState).
- * Requiere: Módulos 1 al 5 resueltos + Autorización Terminal (sudo override).
+ * Requiere: Módulos 1 al 5 resueltos + código de colores correcto.
  */
 export class MasterSwitchModule extends BaseModule {
   public readonly id: ModuleId = 'module_6';
@@ -19,7 +20,7 @@ export class MasterSwitchModule extends BaseModule {
   private isOverrideAuthorized: boolean = false;
   private solvedPrerequisites: boolean = false;
 
-  constructor() {
+  constructor(private readonly overrideChallenge: OverrideChallenge) {
     super();
     this.isUnlocked = false;
   }
@@ -50,13 +51,30 @@ export class MasterSwitchModule extends BaseModule {
 
   public toggleCover(): boolean {
     if (!this.context || !this.context.canInteract()) return false;
-    // La cubierta física solo puede abrirse si cuenta con anulación de terminal sudo override
+    // La cubierta física solo puede abrirse tras validar el código de colores.
     if (!this.isOverrideAuthorized) {
-      this.triggerStrike('Cubierta bloqueada. Requiere comando de terminal [sudo override].');
+      this.triggerStrike('Cubierta bloqueada. Requiere validar el código de colores del panel.');
       return false;
     }
     this.isCoverOpen = !this.isCoverOpen;
     return this.isCoverOpen;
+  }
+
+  public submitOverrideCode(code: string): boolean {
+    if (this.isSolved || this.isOverrideAuthorized) return this.isOverrideAuthorized;
+    if (!this.context || !this.context.canInteract() || !this.checkPrerequisites()) return false;
+
+    if (!/^\d{4}$/.test(code) || code !== getOverrideCode(this.overrideChallenge)) {
+      this.triggerStrike('Código de colores incorrecto. Revisa la equivalencia de cada color.');
+      return false;
+    }
+
+    this.context.unlockOverride();
+    return true;
+  }
+
+  public getColorSequence(): OverrideChallenge['colors'] {
+    return [...this.overrideChallenge.colors];
   }
 
   public flipMasterSwitch(): boolean {

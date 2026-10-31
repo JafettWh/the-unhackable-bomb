@@ -33,7 +33,6 @@ export interface IDefusalStrategy {
    * Módulo 4: Cifrado Geométrico
   * Valida paso o secuencia de figuras por suma de ángulos interiores
    */
-  verifyGeometricStep(currentStep: number, shape: GeometricShape): boolean;
   verifyGeometricSequence(sequence: GeometricShape[]): boolean;
 
   /**

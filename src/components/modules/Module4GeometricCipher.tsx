@@ -12,10 +12,10 @@ interface Module4Props {
 
 const SHAPES: ShapeInfo[] = [
   { id: 'TRIANGLE', symbol: '△', name: 'Triángulo', sides: 3 },
-  { id: 'SQUARE',   symbol: '□', name: 'Cuadrado',  sides: 4 },
+  { id: 'SQUARE', symbol: '□', name: 'Cuadrado', sides: 4 },
   { id: 'PENTAGON', symbol: '⬠', name: 'Pentágono', sides: 5 },
-  { id: 'HEXAGON',  symbol: '⬡', name: 'Hexágono',  sides: 6 },
-  { id: 'OCTAGON',  symbol: '', name: 'Octágono',  sides: 8 },
+  { id: 'HEXAGON', symbol: '⬡', name: 'Hexágono', sides: 6 },
+  { id: 'OCTAGON', symbol: '', name: 'Octágono', sides: 8 },
 ];
 
 export const Module4GeometricCipher: React.FC<Module4Props> = ({ decorator, onAction }) => {
@@ -62,7 +62,7 @@ export const Module4GeometricCipher: React.FC<Module4Props> = ({ decorator, onAc
 
       {/* Instrucción contextual */}
       <div className="w-full px-2 py-1.5 bg-slate-900/70 rounded border border-slate-700/40 text-center font-mono text-[10px] text-slate-400 leading-relaxed">
-        Selecciona <span className="text-amber-300 font-bold">3 polígonos regulares en orden</span> cuya suma de ángulos interiores alcance el objetivo.
+        Selecciona <span className="text-amber-300 font-bold">3 polígonos en orden ascendente</span> según su aporte angular cuya suma alcance el objetivo. Consulta la terminal para conocer la regla de cálculo.
       </div>
 
       {/* Cuadrícula de figuras */}
@@ -89,7 +89,7 @@ export const Module4GeometricCipher: React.FC<Module4Props> = ({ decorator, onAc
         ) : !isUnlocked ? (
           <span className="text-slate-600">🔒 Esperando desbloqueo de módulo previo…</span>
         ) : (
-          <span className="text-slate-500">Paso {currentStep + 1} / {wrapped.targetSequence.length} activo</span>
+          <span className="text-slate-500">Paso {currentStep + 1} / {wrapped.targetSequenceLength} activo</span>
         )}
       </p>
     </div>

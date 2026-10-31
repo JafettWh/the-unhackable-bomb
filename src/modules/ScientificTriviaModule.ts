@@ -53,7 +53,8 @@ export class ScientificTriviaModule extends BaseModule {
 
   public setDialZ(z: number): void {
     if (this.isSolved || !this.isUnlocked) return;
-    this.currentDialZ = Math.max(1, Math.min(99, z));
+    if (!Number.isFinite(z)) return;
+    this.currentDialZ = Math.max(1, Math.min(118, Math.round(z)));
   }
 
   public adjustDialZ(delta: number): void {
@@ -75,9 +76,6 @@ export class ScientificTriviaModule extends BaseModule {
       this.solvedElements++;
       if (this.solvedElements === this.targetElements.length) {
         this.markSolved();
-      } else {
-        this.selectedElement = this.targetElements[this.solvedElements].symbol;
-        this.currentDialZ = 1;
       }
       return true;
     } else {

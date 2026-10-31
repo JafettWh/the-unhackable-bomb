@@ -6,7 +6,7 @@ import type { BombContext } from '../../core/BombContext';
  * Patrón: STATE (Concreto)
  * DefusedState: Estado final de victoria.
  * - Activado cuando el Módulo 6 (Interruptor Maestro) es accionado
- *   tras haber resuelto exitosamente los Módulos 1 al 5 y obtenido sudo override.
+ *   tras haber resuelto exitosamente los Módulos 1 al 5 y validado el código de colores.
  * - Congela el temporizador y muestra el panel desarmado y condecoraciones.
  */
 export class DefusedState implements IBombState {

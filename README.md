@@ -39,9 +39,9 @@ Proyecto de simulación interactiva para la asignatura **Arquitectura de Softwar
 1. Completa la matriz visual con la operación indicada por `scan --spatial`.
 2. Completa la serie numérica indicada por `decode --seq`.
 3. Usa `query --trivia` para recibir dos pistas de elementos y sus números atómicos.
-4. Usa `analyze --geometry` para conocer el objetivo angular de la variante.
-5. Usa `calc --math` para calcular la frecuencia armónica y su fase.
-6. Tras resolver los módulos 1–5, ejecuta `sudo override` y responde al código histórico indicado.
+4. Usa `analyze --geometry` para consultar la fórmula `(L - 2) × 180°` y el objetivo angular. Selecciona tres figuras en orden ascendente de aporte; se acepta cualquier combinación que alcance el objetivo.
+5. Usa `calc --math` para calcular la frecuencia armónica y su fase; la fase también admite ajustes de ±1° y ±5°.
+6. Tras resolver los módulos 1–5, ingresa `sudo override` en la terminal para consultar la regla de conversión del código visual; después introduce el resultado en el teclado del Módulo 6.
 
 Los comandos de análisis no generan strikes; los comandos desconocidos y las respuestas incorrectas sí.
 

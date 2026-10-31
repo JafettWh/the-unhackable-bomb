@@ -7,7 +7,7 @@ import { ChallengeVariant, getInteriorAngle } from '../../modules/ChallengeVaria
  * DeductiveStrategy: Estrategia deductiva activa para resolución secuencial.
  * Basada estrictamente en la semilla BOMB-882:
  * Las soluciones se inyectan desde la variante elegida por ModuleFactory.
- * 6. Maestro: Anulación sudo override confirmada y módulos 1 a 5 resueltos.
+ * 6. Maestro: Código de colores confirmado y módulos 1 a 5 resueltos.
  */
 export class DeductiveStrategy implements IDefusalStrategy {
   public readonly type: StrategyType = 'DEDUCTIVE';
@@ -41,14 +41,13 @@ export class DeductiveStrategy implements IDefusalStrategy {
     );
   }
 
-  public verifyGeometricStep(currentStep: number, shape: GeometricShape): boolean {
-    if (currentStep < 0 || currentStep >= this.variant.geometry.sequence.length) return false;
-    return this.variant.geometry.sequence[currentStep] === shape;
-  }
-
   public verifyGeometricSequence(sequence: GeometricShape[]): boolean {
-    if (sequence.length !== this.variant.geometry.sequence.length) return false;
-    return sequence.every((shape, idx) => shape === this.variant.geometry.sequence[idx]);
+    if (sequence.length !== 3) return false;
+    const angles = sequence.map(getInteriorAngle);
+    const angleSum = angles.reduce((sum, angle) => sum + angle, 0);
+    return angleSum === this.variant.geometry.targetAngleSum
+      && angles[0] < angles[1]
+      && angles[1] < angles[2];
   }
 
   public verifyPhysicalCalculation(frequencyHz: number, phaseDegrees: number): boolean {
