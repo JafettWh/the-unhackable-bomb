@@ -118,6 +118,44 @@ function runTerminalEditionTestSuite() {
   console.assert(bomb.getIsAdminUnlocked() === false, 'El manual debe estar bloqueado para administrador');
   console.log('✓ Estado inicial verificado: STANDBY (Pantalla de Inicio activa, bomba oculta)');
 
+  const configurableBomb = new BombContext(ModuleFactory.SEED, false, 0);
+  configurableBomb.configureRules({
+    initialTimeSeconds: 600,
+    maxStrikes: 4,
+    strikePenalties: [
+      { timePenaltySeconds: 10, speedMultiplier: 1.2 },
+      { timePenaltySeconds: 20, speedMultiplier: 1.8 },
+      { timePenaltySeconds: 30, speedMultiplier: 2.1 },
+      { timePenaltySeconds: 0, speedMultiplier: 1 },
+    ],
+    criticalTimeThresholdSeconds: 600,
+    criticalTimeSpeedMultiplier: 2.5,
+  });
+  console.assert(configurableBomb.getRemainingSeconds() === 600, 'La configuración debe actualizar el tiempo inicial en standby');
+  console.assert(configurableBomb.authenticateAdmin('santamadre123'), 'Las credenciales correctas deben autenticar al administrador');
+  configurableBomb.startBomb();
+  configurableBomb.addStrike('Prueba de penalización configurable');
+  console.assert(configurableBomb.getRemainingSeconds() <= 590, 'La penalización por strike debe descontar el tiempo configurado');
+  console.assert(configurableBomb.getSpeedMultiplier() === 2.5, 'El umbral de tiempo debe activar la velocidad crítica configurada');
+  configurableBomb.stopTimer();
+
+  const strikeLimitBomb = new BombContext(ModuleFactory.SEED, false, 0);
+  strikeLimitBomb.configureRules({
+    initialTimeSeconds: 900,
+    maxStrikes: 2,
+    strikePenalties: [
+      { timePenaltySeconds: 0, speedMultiplier: 1 },
+      { timePenaltySeconds: 0, speedMultiplier: 1 },
+    ],
+    criticalTimeThresholdSeconds: 0,
+    criticalTimeSpeedMultiplier: 2,
+  });
+  strikeLimitBomb.startBomb();
+  strikeLimitBomb.addStrike('Primer strike de prueba');
+  strikeLimitBomb.addStrike('Strike límite de prueba');
+  console.assert(strikeLimitBomb.getStatus() === 'EXPLODED', 'El límite de strikes configurado debe detonar la bomba');
+  strikeLimitBomb.stopTimer();
+
   // 1. Iniciar Conexión
   bomb.startBomb();
   console.assert(bomb.getStatus() === 'NORMAL', 'Tras iniciar conexión, el estado debe ser NORMAL');

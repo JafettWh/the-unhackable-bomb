@@ -81,6 +81,9 @@ export const DefusalManualModal: React.FC<ManualModalProps> = ({
                   <h4 className="font-bold font-display text-sm text-red-300 uppercase">
                     ESCALADO DE TIEMPO Y SANCIONES EN TERMINAL EDITION
                   </h4>
+                  <p className="mt-1 text-xs text-slate-400">
+                    Los valores siguientes son los predeterminados; el panel de administración permite modificarlos.
+                  </p>
                   <ul className="list-disc list-inside mt-1 space-y-1 text-slate-300 text-xs">
                     <li>
                       <strong>Tiempo inicial:</strong> 15:00 minutos (900 segundos).

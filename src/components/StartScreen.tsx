@@ -1,13 +1,22 @@
 import React from 'react';
-import { Flame, Play, ShieldAlert, Cpu, Terminal, Zap, Radio, Clock, AlertTriangle } from 'lucide-react';
+import { Flame, Play, Shield, ShieldAlert, Cpu, Terminal, Zap, Clock, AlertTriangle } from 'lucide-react';
 import { soundManager } from '../core/SoundManager';
 
 interface StartScreenProps {
   onStartConnection: () => void;
+  onOpenAdminPanel: () => void;
   seed: string;
+  initialTimeSeconds: number;
+  maxStrikes: number;
 }
 
-export const StartScreen: React.FC<StartScreenProps> = ({ onStartConnection, seed }) => {
+export const StartScreen: React.FC<StartScreenProps> = ({
+  onStartConnection,
+  onOpenAdminPanel,
+  seed,
+  initialTimeSeconds,
+  maxStrikes,
+}) => {
   const handleStart = () => {
     soundManager.playSuccess();
     onStartConnection();
@@ -39,6 +48,15 @@ export const StartScreen: React.FC<StartScreenProps> = ({ onStartConnection, see
         </div>
 
         <div className="flex items-center gap-2">
+          <button
+            aria-label="Abrir acceso de administrador"
+            className="rounded border border-slate-700 bg-slate-900/80 p-2 text-slate-400 transition hover:border-emerald-500/60 hover:text-emerald-300"
+            onClick={onOpenAdminPanel}
+            title="Administración"
+            type="button"
+          >
+            <Shield className="h-4 w-4" />
+          </button>
           <span className="text-xs px-2.5 py-1 rounded bg-cyan-950 text-cyan-300 border border-cyan-500/40 font-bold tracking-wider">
             SERIE: {seed}
           </span>
@@ -79,7 +97,9 @@ export const StartScreen: React.FC<StartScreenProps> = ({ onStartConnection, see
               <Clock className="w-6 h-6 text-cyan-400 flex-shrink-0" />
               <div>
                 <span className="text-slate-400 block text-[10px]">TIEMPO LÍMITE</span>
-                <span className="text-white font-black text-sm">15:00 MIN</span>
+                <span className="text-white font-black text-sm">
+                  {`${Math.floor(initialTimeSeconds / 60).toString().padStart(2, '0')}:${(initialTimeSeconds % 60).toString().padStart(2, '0')} MIN`}
+                </span>
               </div>
             </div>
 
@@ -87,7 +107,7 @@ export const StartScreen: React.FC<StartScreenProps> = ({ onStartConnection, see
               <AlertTriangle className="w-6 h-6 text-red-400 flex-shrink-0" />
               <div>
                 <span className="text-slate-400 block text-[10px]">TOLERANCIA</span>
-                <span className="text-red-400 font-black text-sm">3 STRIKES MAX</span>
+                <span className="text-red-400 font-black text-sm">{maxStrikes} STRIKES MAX</span>
               </div>
             </div>
 

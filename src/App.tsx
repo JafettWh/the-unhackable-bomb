@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useBombContext } from './hooks/useBombContext';
 import { Header } from './components/Header';
 import { StartScreen } from './components/StartScreen';
@@ -13,6 +13,7 @@ import { Module6MasterSwitch } from './components/modules/Module6MasterSwitch';
 import { DefusalManualModal } from './components/DefusalManualModal';
 import { VictoryModal } from './components/VictoryModal';
 import { ExplosionModal } from './components/ExplosionModal';
+import { AdminPanelModal } from './components/AdminPanelModal';
 
 import { SpatialOrientationModule } from './modules/SpatialOrientationModule';
 import { MathSequenceModule } from './modules/MathSequenceModule';
@@ -34,16 +35,43 @@ export function App() {
     modules,
     isAdminUnlocked,
     isOverrideUnlocked,
+    rules,
     startBomb,
     reset,
   } = useBombContext();
 
   const [manualModalOpen, setManualModalOpen] = useState(false);
   const [manualInitialTab, setManualInitialTab] = useState<'blackbox' | 'creator'>('blackbox');
+  const [adminPanelOpen, setAdminPanelOpen] = useState(false);
+
+  useEffect(() => {
+    if (isAdminUnlocked) setAdminPanelOpen(true);
+  }, [isAdminUnlocked]);
+
+  const authenticateAdmin = (password: string) => bomb.authenticateAdmin(password);
+  const saveRules = (nextRules: typeof rules) => bomb.configureRules(nextRules);
 
   // Si el estado es STANDBY, mostrar exclusivamente la Pantalla de Inicio (ocultando la bomba)
   if (status === 'STANDBY') {
-    return <StartScreen onStartConnection={startBomb} seed={ModuleFactory.SEED} />;
+    return (
+      <>
+        <StartScreen
+          onStartConnection={startBomb}
+          onOpenAdminPanel={() => setAdminPanelOpen(true)}
+          seed={ModuleFactory.SEED}
+          initialTimeSeconds={rules.initialTimeSeconds}
+          maxStrikes={rules.maxStrikes}
+        />
+        <AdminPanelModal
+          isOpen={adminPanelOpen}
+          isAdminUnlocked={isAdminUnlocked}
+          rules={rules}
+          onClose={() => setAdminPanelOpen(false)}
+          onAuthenticate={authenticateAdmin}
+          onSave={saveRules}
+        />
+      </>
+    );
   }
 
   // Obtener referencias fuertemente tipadas a cada uno de los 6 módulos
@@ -79,13 +107,14 @@ export function App() {
       <Header
         remainingSeconds={remainingSeconds}
         strikes={strikes}
-        maxStrikes={3}
+        maxStrikes={rules.maxStrikes}
         speedMultiplier={speedMultiplier}
         status={status}
         seed={ModuleFactory.SEED}
         isAdminUnlocked={isAdminUnlocked}
         onReset={() => reset(false)}
         onOpenManual={handleOpenManual}
+        onOpenAdminPanel={() => setAdminPanelOpen(true)}
       />
 
       {/* Contenedor Principal de la Bomba y Terminal */}
@@ -255,6 +284,15 @@ export function App() {
         onGoHome={() => reset(true)}
         strikes={strikes}
         remainingSeconds={remainingSeconds}
+      />
+
+      <AdminPanelModal
+        isOpen={adminPanelOpen}
+        isAdminUnlocked={isAdminUnlocked}
+        rules={rules}
+        onClose={() => setAdminPanelOpen(false)}
+        onAuthenticate={authenticateAdmin}
+        onSave={saveRules}
       />
     </div>
   );

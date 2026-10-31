@@ -48,6 +48,7 @@ export type BombEventType =
   | 'RESET'
   | 'TIME_PENALTY'
   | 'ADMIN_UNLOCKED'
+  | 'RULES_UPDATED'
   | 'OVERRIDE_UNLOCKED'
   | 'TERMINAL_COMMAND';
 

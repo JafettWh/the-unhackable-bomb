@@ -17,14 +17,13 @@ export class PanicState implements IBombState {
   public readonly allowsInteraction: boolean = true;
 
   public onEnter(context: BombContext): void {
-    context.setSpeedMultiplier(3.0);
+    context.setSpeedMultiplier(context.getEffectiveSpeedMultiplier(
+      context.getStrikePenalty(context.getStrikes()).speedMultiplier
+    ));
   }
 
   public handleStrike(context: BombContext): void {
-    const currentStrikes = context.getStrikes();
-    if (currentStrikes >= 3) {
-      context.setState(new ExplodedState());
-    }
+    context.applyStrikeEscalation();
   }
 
   public handleTick(context: BombContext): void {

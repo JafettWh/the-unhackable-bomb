@@ -56,7 +56,7 @@ export const TerminalComponent: React.FC<TerminalComponentProps> = ({ bomb }) =>
           addLogEntry({
             id: `evt-${Date.now()}-${Math.random()}`,
             timestamp: timeStr,
-            text: `[OBSERVER] ¡ALERTA DE SEGURIDAD! Strike ${event.strikes}/3 registrado: ${event.data?.reason || 'Error crítico'}`,
+            text: `[OBSERVER] ¡ALERTA DE SEGURIDAD! Strike ${event.strikes}/${bomb.getRules().maxStrikes} registrado: ${event.data?.reason || 'Error crítico'}`,
             type: 'error',
           });
         } else if (event.type === 'ADMIN_UNLOCKED') {

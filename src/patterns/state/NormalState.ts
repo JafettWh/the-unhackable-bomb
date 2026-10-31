@@ -1,7 +1,6 @@
 import { IBombState } from './IBombState';
 import { BombStatus } from '../../types';
 import type { BombContext } from '../../core/BombContext';
-import { PanicState } from './PanicState';
 import { ExplodedState } from './ExplodedState';
 
 /**
@@ -25,8 +24,8 @@ export class NormalState implements IBombState {
 
   public onEnter(context: BombContext): void {
     if (context.getStrikes() === 1) {
-      this._speedMultiplier = 1.5;
-      context.setSpeedMultiplier(1.5);
+      this._speedMultiplier = context.getEffectiveSpeedMultiplier(context.getStrikePenalty(1).speedMultiplier);
+      context.setSpeedMultiplier(this._speedMultiplier);
     } else {
       this._speedMultiplier = 1.0;
       context.setSpeedMultiplier(1.0);
@@ -34,17 +33,7 @@ export class NormalState implements IBombState {
   }
 
   public handleStrike(context: BombContext): void {
-    const currentStrikes = context.getStrikes();
-    if (currentStrikes === 1) {
-      this._speedMultiplier = 1.5;
-      context.deductTime(120); // -2 minutos (-120s)
-      context.setSpeedMultiplier(1.5);
-    } else if (currentStrikes === 2) {
-      context.deductTime(240); // -4 minutos (-240s)
-      context.setState(new PanicState()); // Conmuta a estado de pánico
-    } else if (currentStrikes >= 3) {
-      context.setState(new ExplodedState()); // Detonación instantánea
-    }
+    context.applyStrikeEscalation();
   }
 
   public handleTick(context: BombContext): void {

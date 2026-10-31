@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { BombContext } from '../core/BombContext';
+import { BombContext, BombRules } from '../core/BombContext';
 import { BaseModule } from '../modules/BaseModule';
 import { BombStatus, StrategyType } from '../types';
 
@@ -21,6 +21,7 @@ export function useBombContext() {
   const [logs, setLogs] = useState(bomb.getLogs());
   const [isAdminUnlocked, setIsAdminUnlocked] = useState<boolean>(bomb.getIsAdminUnlocked());
   const [isOverrideUnlocked, setIsOverrideUnlocked] = useState<boolean>(bomb.getIsOverrideUnlocked());
+  const [rules, setRules] = useState<BombRules>(bomb.getRules());
   const [tickCounter, setTickCounter] = useState<number>(0);
 
   useEffect(() => {
@@ -35,6 +36,7 @@ export function useBombContext() {
       setLogs(bomb.getLogs());
       setIsAdminUnlocked(bomb.getIsAdminUnlocked());
       setIsOverrideUnlocked(bomb.getIsOverrideUnlocked());
+      setRules(bomb.getRules());
       setTickCounter((prev) => prev + 1);
     });
 
@@ -63,6 +65,7 @@ export function useBombContext() {
     logs,
     isAdminUnlocked,
     isOverrideUnlocked,
+    rules,
     tickCounter,
     startBomb,
     reset,

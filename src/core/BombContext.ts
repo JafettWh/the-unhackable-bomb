@@ -4,6 +4,7 @@ import { IBombState } from '../patterns/state/IBombState';
 import { StartState } from '../patterns/state/StartState';
 import { NormalState } from '../patterns/state/NormalState';
 import { ExplodedState } from '../patterns/state/ExplodedState';
+import { PanicState } from '../patterns/state/PanicState';
 import { IDefusalStrategy } from '../patterns/strategy/IDefusalStrategy';
 import { DeductiveStrategy } from '../patterns/strategy/DeductiveStrategy';
 import { ModuleFactory } from '../patterns/factory/ModuleFactory';
@@ -15,6 +16,32 @@ import {
   BombStatus,
   ModuleId,
 } from '../types';
+
+export interface StrikePenalty {
+  timePenaltySeconds: number;
+  speedMultiplier: number;
+}
+
+export interface BombRules {
+  initialTimeSeconds: number;
+  maxStrikes: number;
+  strikePenalties: StrikePenalty[];
+  criticalTimeThresholdSeconds: number;
+  criticalTimeSpeedMultiplier: number;
+}
+
+const defaultStrikePenalty = (strikeNumber: number): StrikePenalty => ({
+  timePenaltySeconds: strikeNumber === 1 ? 120 : strikeNumber === 2 ? 240 : 0,
+  speedMultiplier: strikeNumber === 1 ? 1.5 : strikeNumber === 2 ? 3 : 1,
+});
+
+const createDefaultRules = (): BombRules => ({
+  initialTimeSeconds: 900,
+  maxStrikes: 3,
+  strikePenalties: [1, 2, 3].map(defaultStrikePenalty),
+  criticalTimeThresholdSeconds: 0,
+  criticalTimeSpeedMultiplier: 2,
+});
 
 /**
  * MOTOR CENTRAL: BombContext
@@ -33,7 +60,8 @@ export class BombContext implements IBombSubject {
   private observers: Set<IBombObserver> = new Set();
   private modules: BaseModule[] = [];
 
-  private remainingSeconds: number = BombContext.INITIAL_TIME_SECONDS;
+  private rules: BombRules = createDefaultRules();
+  private remainingSeconds: number = this.rules.initialTimeSeconds;
   private strikes: number = 0;
   private speedMultiplier: number = 0;
   private timerIntervalId: number | null = null;
@@ -151,6 +179,7 @@ export class BombContext implements IBombSubject {
     const elapsedSeconds = (now - this.lastTickTimestamp) / 1000;
     this.lastTickTimestamp = now;
 
+    this.setSpeedMultiplier(this.getEffectiveSpeedMultiplier());
     const deduction = elapsedSeconds * this.speedMultiplier;
     this.remainingSeconds = Math.max(0, this.remainingSeconds - deduction);
 
@@ -180,7 +209,7 @@ export class BombContext implements IBombSubject {
     if (this.state.name === 'DEFUSED' || this.state.name === 'EXPLODED' || this.state.name === 'STANDBY') return;
 
     this.strikes++;
-    this.addLog(`¡STRIKE ${this.strikes}/${BombContext.MAX_STRIKES}! ${reason}`, 'danger');
+    this.addLog(`¡STRIKE ${this.strikes}/${this.rules.maxStrikes}! ${reason}`, 'danger');
 
     this.notify({
       type: 'STRIKE',
@@ -193,8 +222,89 @@ export class BombContext implements IBombSubject {
       data: { reason },
     });
 
-    // Delegar escalado de error al estado activo
+    // Delegar la penalización al estado activo
     this.state.handleStrike(this);
+  }
+
+  public applyStrikeEscalation(): void {
+    if (this.strikes >= this.rules.maxStrikes) {
+      this.setState(new ExplodedState());
+      return;
+    }
+
+    const penalty = this.getStrikePenalty(this.strikes);
+    if (penalty.timePenaltySeconds > 0) {
+      this.deductTime(penalty.timePenaltySeconds);
+      if (this.state.name === 'EXPLODED') return;
+    }
+
+    if (this.strikes >= 2 && this.state.name !== 'PANIC') {
+      this.setState(new PanicState());
+    } else {
+      this.setSpeedMultiplier(this.getEffectiveSpeedMultiplier(penalty.speedMultiplier));
+    }
+  }
+
+  public getEffectiveSpeedMultiplier(baseSpeed?: number): number {
+    const standardSpeed = baseSpeed ?? (this.strikes > 0
+      ? this.getStrikePenalty(this.strikes).speedMultiplier
+      : this.state.speedMultiplier);
+    if (
+      this.rules.criticalTimeThresholdSeconds > 0
+      && this.remainingSeconds <= this.rules.criticalTimeThresholdSeconds
+    ) {
+      return Math.max(standardSpeed, this.rules.criticalTimeSpeedMultiplier);
+    }
+    return standardSpeed;
+  }
+
+  public getStrikePenalty(strikeNumber: number): StrikePenalty {
+    const penalty = this.rules.strikePenalties[strikeNumber - 1];
+    return penalty ? { ...penalty } : defaultStrikePenalty(strikeNumber);
+  }
+
+  public getRules(): BombRules {
+    return {
+      ...this.rules,
+      strikePenalties: this.rules.strikePenalties.map((penalty) => ({ ...penalty })),
+    };
+  }
+
+  public configureRules(rules: BombRules): void {
+    const maxStrikes = Math.min(10, Math.max(1, Math.round(rules.maxStrikes)));
+    const initialTimeSeconds = Math.min(3600, Math.max(60, Math.round(rules.initialTimeSeconds)));
+    const criticalTimeThresholdSeconds = Math.min(
+      initialTimeSeconds,
+      Math.max(0, Math.round(rules.criticalTimeThresholdSeconds))
+    );
+    const strikePenalties = Array.from({ length: maxStrikes }, (_, index) => {
+      const penalty = rules.strikePenalties[index] ?? defaultStrikePenalty(index + 1);
+      return {
+        timePenaltySeconds: Math.min(initialTimeSeconds, Math.max(0, Math.round(penalty.timePenaltySeconds))),
+        speedMultiplier: Math.min(5, Math.max(0.1, penalty.speedMultiplier)),
+      };
+    });
+
+    this.rules = {
+      initialTimeSeconds,
+      maxStrikes,
+      strikePenalties,
+      criticalTimeThresholdSeconds,
+      criticalTimeSpeedMultiplier: Math.min(5, Math.max(0.1, rules.criticalTimeSpeedMultiplier)),
+    };
+    if (this.state.name === 'STANDBY') {
+      this.remainingSeconds = initialTimeSeconds;
+    }
+    this.addLog('Parámetros de partida actualizados por administración.', 'success');
+    this.notify({
+      type: 'RULES_UPDATED',
+      timestamp: Date.now(),
+      remainingSeconds: Math.ceil(this.remainingSeconds),
+      strikes: this.strikes,
+      status: this.state.name,
+      strategy: this.strategy.type,
+      speedMultiplier: this.speedMultiplier,
+    });
   }
 
   public deductTime(seconds: number): void {
@@ -314,6 +424,12 @@ export class BombContext implements IBombSubject {
     return this.isAdminUnlocked;
   }
 
+  public authenticateAdmin(password: string): boolean {
+    if (password !== 'santamadre123') return false;
+    this.unlockAdmin();
+    return true;
+  }
+
   public unlockOverride(): void {
     if (this.isOverrideUnlocked) return;
     this.isOverrideUnlocked = true;
@@ -359,8 +475,7 @@ export class BombContext implements IBombSubject {
     // Flujo de contraseña admin (primer paso: sudo -admin → solicitar password)
     if (this.awaitingAdminPassword) {
       this.awaitingAdminPassword = false;
-      if (input === 'santamadre123') {
-        this.unlockAdmin();
+      if (this.authenticateAdmin(input)) {
         return {
           success: true,
           output: '[ACCESO ROOT CONCEDIDO] Credenciales administrativas verificadas. Manual de Desactivación habilitado.',
@@ -461,7 +576,7 @@ export class BombContext implements IBombSubject {
       return {
         success: true,
         output: `DIAGNÓSTICO DE PARTIDA // BOMB-882 // VARIANTE ${this.variantIndex + 1}/${ModuleFactory.VARIANT_COUNT}:
-  Tiempo Restante: ${timeStr} | Strikes: ${this.strikes}/${BombContext.MAX_STRIKES} | Vel: ${this.speedMultiplier.toFixed(1)}x
+  Tiempo Restante: ${timeStr} | Strikes: ${this.strikes}/${this.rules.maxStrikes} | Vel: ${this.speedMultiplier.toFixed(1)}x
   Estado Global  : ${this.state.displayName}
   Admin Root     : ${this.isAdminUnlocked ? 'HABILITADO' : 'BLOQUEADO'}
   Master Override: ${this.isOverrideUnlocked ? 'AUTORIZADO' : 'BLOQUEADO'}
@@ -484,7 +599,7 @@ ${modulesStatus}`,
 
   public reset(seed: string = ModuleFactory.SEED, startInNormalState: boolean = true, variantIndex?: number): void {
     this.stopTimer();
-    this.remainingSeconds = BombContext.INITIAL_TIME_SECONDS;
+    this.remainingSeconds = this.rules.initialTimeSeconds;
     this.strikes = 0;
     this.isAdminUnlocked = false;
     this.isOverrideUnlocked = false;
