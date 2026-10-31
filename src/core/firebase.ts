@@ -1,6 +1,8 @@
 import { getApp, getApps, initializeApp } from 'firebase/app';
 import {
   getAuth,
+  inMemoryPersistence,
+  initializeAuth,
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut,
@@ -20,7 +22,15 @@ const firebaseConfig = {
 
 const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 
-export const firebaseAuth = getAuth(app);
+function initializePageAuth() {
+  try {
+    return initializeAuth(app, { persistence: inMemoryPersistence });
+  } catch {
+    return getAuth(app);
+  }
+}
+
+export const firebaseAuth = initializePageAuth();
 export const firestore = getFirestore(app);
 export const gameRulesDocument = doc(firestore, 'settings', 'gameRules');
 

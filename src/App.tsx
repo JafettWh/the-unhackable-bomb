@@ -135,6 +135,7 @@ export function App() {
   const isPanic = status === 'PANIC';
   const isDefused = status === 'DEFUSED';
   const isExploded = status === 'EXPLODED';
+  const strikesUntilExplosion = Math.max(0, rules.maxStrikes - strikes);
 
   return (
     <div className="relative min-h-screen bg-[#06090e] text-slate-100 flex flex-col justify-between selection:bg-cyan-500/30 selection:text-cyan-300 font-mono">
@@ -166,7 +167,10 @@ export function App() {
             <div className="flex items-center gap-2">
               <AlertTriangle className="w-5 h-5 text-red-400" />
               <span className="font-bold">
-                ¡ALERTA CRÍTICA DE SOBRECARGA! 2º STRIKE DETECTADO: VELOCIDAD 3.0x - PRÓXIMO ERROR DETONARÁ LA BOMBA.
+                ¡ALERTA CRÍTICA DE SOBRECARGA! VELOCIDAD {speedMultiplier.toFixed(1)}x.{' '}
+                {strikesUntilExplosion === 1
+                  ? 'El próximo strike detonará la bomba.'
+                  : `Faltan ${strikesUntilExplosion} strikes para la detonación.`}
               </span>
             </div>
             <span className="font-bold text-red-200">ESTADO: PÁNICO</span>
@@ -324,6 +328,7 @@ export function App() {
         onReset={() => reset(false)}
         onGoHome={() => reset(true)}
         strikes={strikes}
+        maxStrikes={rules.maxStrikes}
         remainingSeconds={remainingSeconds}
       />
 

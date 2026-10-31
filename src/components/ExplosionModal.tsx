@@ -6,6 +6,7 @@ interface ExplosionModalProps {
   onReset: () => void;
   onGoHome: () => void;
   strikes: number;
+  maxStrikes: number;
   remainingSeconds: number;
 }
 
@@ -14,13 +15,14 @@ export const ExplosionModal: React.FC<ExplosionModalProps> = ({
   onReset,
   onGoHome,
   strikes,
+  maxStrikes,
   remainingSeconds,
 }) => {
   if (!isOpen) return null;
 
   const reason =
-    strikes >= 3
-      ? 'Acumulación de 3 Strikes consecutivos (Detonación instantánea por fallo de protocolo).'
+    strikes >= maxStrikes
+      ? `Se alcanzó el límite de ${maxStrikes} ${maxStrikes === 1 ? 'strike' : 'strikes'} (detonación instantánea por fallo de protocolo).`
       : 'Agotamiento total del tiempo límite (00:00).';
 
   return (
@@ -52,7 +54,7 @@ export const ExplosionModal: React.FC<ExplosionModalProps> = ({
           </div>
           <p className="text-slate-300">{reason}</p>
           <div className="mt-3 pt-2 border-t border-slate-900 flex justify-between text-[11px] text-slate-500">
-            <span>Strikes: {strikes} / 3</span>
+            <span>Strikes: {strikes} / {maxStrikes}</span>
             <span>Tiempo restante: {remainingSeconds}s</span>
           </div>
         </div>
